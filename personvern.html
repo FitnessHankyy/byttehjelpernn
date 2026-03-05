@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personvernerklæring – Byttehjelpern</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --lime: #b6f060; --dark: #0d1f14; --mid: #1c3526; --text: #e8f5ee; --muted: #7aac8e; --card: #152a1e; --radius: 14px; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--text); }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px; background: rgba(13,31,20,0.97);
+      border-bottom: 1px solid rgba(182,240,96,0.08);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--lime); text-decoration: none; }
+    .logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--lime); }
+    .nav-cta { background: var(--lime); color: var(--dark) !important; padding: 8px 20px; border-radius: 100px; font-weight: 600 !important; }
+
+    .innhold { max-width: 740px; margin: 0 auto; padding: 60px 24px 100px; }
+    .topp { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .topp h1 { font-family: 'DM Serif Display', serif; font-size: 2.4rem; margin-bottom: 10px; }
+    .topp p { color: var(--muted); font-size: 0.9rem; }
+
+    h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin: 40px 0 14px; color: var(--text); }
+    h3 { font-size: 1rem; font-weight: 600; margin: 24px 0 10px; color: var(--text); }
+    p { color: rgba(232,245,238,0.8); line-height: 1.8; font-size: 0.95rem; margin-bottom: 14px; }
+    ul { margin: 12px 0 16px 20px; color: rgba(232,245,238,0.8); font-size: 0.95rem; line-height: 1.8; }
+    ul li { margin-bottom: 6px; }
+    a { color: var(--lime); }
+
+    .info-boks {
+      background: rgba(182,240,96,0.05); border: 1.5px solid rgba(182,240,96,0.15);
+      border-radius: var(--radius); padding: 20px 24px; margin: 32px 0;
+    }
+    .info-boks p { margin: 0; font-size: 0.9rem; }
+
+    footer { background: var(--mid); border-top: 1px solid rgba(255,255,255,0.07); padding: 40px 24px; text-align: center; }
+    footer p { color: var(--muted); font-size: 0.85rem; margin-bottom: 12px; }
+    .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+    .footer-links a:hover { color: var(--lime); }
+    @media (max-width: 600px) { nav { padding: 14px 16px; } .nav-links a:not(.nav-cta) { display: none; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Bytte<span>hjelpern</span></a>
+  <div class="nav-links">
+    <a href="om-oss.html">Om oss</a>
+    <a href="minside.html">Logg inn</a>
+    <a href="minside.html" class="nav-cta">Kom i gang →</a>
+  </div>
+</nav>
+
+<div class="innhold">
+  <div class="topp">
+    <h1>Personvernerklæring</h1>
+    <p>Sist oppdatert: 20. februar 2025 · Versjon 1.0</p>
+  </div>
+
+  <div class="info-boks">
+    <p>Byttehjelpern tar personvern på alvor. Denne erklæringen forklarer hvilke opplysninger vi samler inn, hvorfor vi gjør det, og hvilke rettigheter du har som bruker av tjenesten vår.</p>
+  </div>
+
+  <h2>1. Behandlingsansvarlig</h2>
+  <p>Byttehjelpern er behandlingsansvarlig for personopplysningene som behandles i forbindelse med bruk av tjenesten. Kontakt oss på <a href="mailto:hei@byttehjelpern.no">hei@byttehjelpern.no</a> ved spørsmål om personvern.</p>
+
+  <h2>2. Hvilke opplysninger samler vi inn?</h2>
+  <h3>2.1 Opplysninger du gir oss</h3>
+  <ul>
+    <li>Navn og fødselsdato</li>
+    <li>E-postadresse og passord (kryptert)</li>
+    <li>Hjemmeadresse og poststed</li>
+    <li>Informasjon om dine strøm-, mobil- og andre abonnementer</li>
+    <li>Målernummer for strøm (valgfritt, kun for avtalebytter)</li>
+    <li>Samtykke til avtalebytter på dine vegne</li>
+  </ul>
+
+  <h3>2.2 Opplysninger vi samler inn automatisk</h3>
+  <ul>
+    <li>IP-adresse og nettleserinformasjon</li>
+    <li>Tidspunkt for innlogging og bruk av tjenesten</li>
+    <li>Hvilke sider og funksjoner du bruker</li>
+  </ul>
+
+  <h2>3. Hvorfor behandler vi personopplysninger?</h2>
+  <ul>
+    <li><strong>Levering av tjenesten:</strong> For å sammenligne avtaler, sende varsler og gjennomføre avtalebytter på dine vegne (rettslig grunnlag: avtale)</li>
+    <li><strong>Forbedring av tjenesten:</strong> For å forstå hvordan tjenesten brukes og gjøre den bedre (rettslig grunnlag: berettiget interesse)</li>
+    <li><strong>Kommunikasjon:</strong> For å sende deg varsler om bedre avtaler og nødvendig informasjon om tjenesten (rettslig grunnlag: avtale og samtykke)</li>
+    <li><strong>Lovpålagte krav:</strong> Oppfyllelse av regnskapsmessige og lovmessige forpliktelser</li>
+  </ul>
+
+  <h2>4. Deling av opplysninger</h2>
+  <p>Byttehjelpern selger <strong>aldri</strong> dine personopplysninger til tredjepart. Opplysninger kan likevel deles i følgende tilfeller:</p>
+  <ul>
+    <li><strong>Strøm- og mobilselskaper:</strong> Kun når du eksplisitt har gitt samtykke til at vi kan gjennomføre et avtalebytter på dine vegne. Du vil alltid bli varslet og må godkjenne <em>før</em> et bytte gjennomføres.</li>
+    <li><strong>Databehandlere:</strong> Vi bruker Supabase for sikker lagring av data. Supabase er underlagt databehandleravtale og behandler data i henhold til GDPR.</li>
+    <li><strong>Lovpålagte krav:</strong> Vi kan utlevere opplysninger dersom vi er rettslig forpliktet til det.</li>
+  </ul>
+
+  <h2>5. Betalt samarbeid og affiliate-lenker</h2>
+  <p>Noen leverandører i vår sammenligningsliste er kommersielle partnere. Dette betyr at vi kan motta provisjon dersom du klikker deg videre og inngår en avtale. Slike lenker er alltid merket med <strong>(A)</strong>. Betalt samarbeid påvirker <strong>aldri</strong> rangeringen i sammenligningslisten — den baseres utelukkende på pris og vilkår fra Forbrukerrådet.</p>
+
+  <h2>6. Lagring og sikkerhet</h2>
+  <p>Dine opplysninger lagres på sikre servere i EU/EØS. Vi bruker kryptering for passord og sensitiv informasjon. Opplysningene lagres så lenge du har en aktiv konto, og slettes innen 90 dager etter at du avslutter kontoen din.</p>
+
+  <h2>7. Dine rettigheter</h2>
+  <p>Etter personvernforordningen (GDPR) har du rett til å:</p>
+  <ul>
+    <li><strong>Innsyn:</strong> Be om kopi av alle opplysninger vi har om deg</li>
+    <li><strong>Retting:</strong> Korrigere feil eller ufullstendige opplysninger</li>
+    <li><strong>Sletting:</strong> Be om at opplysningene dine slettes («retten til å bli glemt»)</li>
+    <li><strong>Begrensning:</strong> Be om at behandlingen begrenses</li>
+    <li><strong>Dataportabilitet:</strong> Motta dine opplysninger i et maskinlesbart format</li>
+    <li><strong>Innsigelse:</strong> Protestere mot behandling basert på berettiget interesse</li>
+    <li><strong>Trekke samtykke:</strong> Samtykke til avtalebytter kan trekkes tilbake når som helst fra din profilside</li>
+  </ul>
+  <p>For å utøve dine rettigheter, kontakt oss på <a href="mailto:hei@byttehjelpern.no">hei@byttehjelpern.no</a>. Vi svarer innen 30 dager.</p>
+
+  <h2>8. Informasjonskapsler (cookies)</h2>
+  <p>Byttehjelpern bruker teknisk nødvendige informasjonskapsler for å holde deg innlogget og huske dine preferanser. Vi bruker ikke informasjonskapsler til markedsføring eller sporing på tvers av nettsteder.</p>
+
+  <h2>9. Klagerett</h2>
+  <p>Dersom du mener vi behandler personopplysningene dine i strid med GDPR, har du rett til å klage til Datatilsynet: <a href="https://www.datatilsynet.no" target="_blank">datatilsynet.no</a></p>
+
+  <h2>10. Endringer i personvernerklæringen</h2>
+  <p>Vi kan oppdatere denne erklæringen ved behov. Vesentlige endringer vil varsles via e-post og/eller tydelig melding på nettsiden. Fortsatt bruk av tjenesten etter slike endringer anses som aksept av den oppdaterte erklæringen.</p>
+
+</div>
+
+<footer>
+  <p>© 2025 Byttehjelpern · Beta</p>
+  <div class="footer-links">
+    <a href="om-oss.html">Om oss</a>
+    <a href="personvern.html">Personvern</a>
+    <a href="vilkar.html">Vilkår</a>
+    <a href="mailto:hei@byttehjelpern.no">Kontakt</a>
+  </div>
+</footer>
+
+</body>
+</html>

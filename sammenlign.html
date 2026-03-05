@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sammenlign avtaler – Byttehjelpern</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:  #1a7a4a;
+      --lime:   #b6f060;
+      --dark:   #0d1f14;
+      --mid:    #1c3526;
+      --text:   #e8f5ee;
+      --muted:  #7aac8e;
+      --card:   #152a1e;
+      --radius: 14px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(13,31,20,0.95);
+      border-bottom: 1px solid rgba(182,240,96,0.08);
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--lime); text-decoration: none; }
+    .logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 12px; align-items: center; }
+    .nav-link { color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+    .nav-link:hover { color: var(--lime); }
+    .nav-cta {
+      background: var(--lime); color: var(--dark);
+      padding: 8px 20px; border-radius: 100px;
+      font-weight: 600; font-size: 0.88rem;
+    }
+    .nav-cta:hover { background: #cdf577; }
+
+    /* HERO */
+    .hero {
+      text-align: center; padding: 60px 24px 40px;
+      background: linear-gradient(180deg, rgba(35,160,102,0.08) 0%, transparent 100%);
+    }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -1px; margin-bottom: 12px; }
+    .hero h1 em { font-style: italic; color: var(--lime); }
+    .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+    /* FANER */
+    .faner-wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    .faner {
+      display: flex; gap: 4px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 100px;
+      padding: 5px;
+      width: fit-content;
+      margin: 32px auto 0;
+    }
+    .fane-btn {
+      padding: 10px 28px; border-radius: 100px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 500;
+      cursor: pointer; border: none; background: transparent;
+      color: var(--muted); transition: all 0.2s;
+    }
+    .fane-btn.aktiv { background: var(--lime); color: var(--dark); font-weight: 600; }
+
+    /* INNHOLD */
+    .innhold { max-width: 1000px; margin: 0 auto; padding: 32px 24px 80px; }
+    .tab-content { display: none; }
+    .tab-content.aktiv { display: block; }
+
+    /* KALKULATOR */
+    .kalkulator {
+      background: var(--card);
+      border: 1px solid rgba(182,240,96,0.15);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 28px;
+    }
+    .kalk-tittel { font-size: 0.78rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--lime); margin-bottom: 18px; }
+    .kalk-rad { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 14px; align-items: end; }
+    @media (max-width: 680px) { .kalk-rad { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 420px) { .kalk-rad { grid-template-columns: 1fr; } }
+    .kalk-gruppe label { display: block; font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-bottom: 7px; }
+    .kalk-gruppe input, .kalk-gruppe select {
+      width: 100%; padding: 11px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .kalk-gruppe input:focus, .kalk-gruppe select:focus { border-color: var(--lime); }
+    .kalk-gruppe select option { background: var(--dark); }
+    .btn-kalkuker {
+      padding: 11px 24px; border-radius: 10px;
+      background: var(--lime); color: var(--dark);
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 600;
+      border: none; cursor: pointer; white-space: nowrap;
+      transition: background 0.2s; height: fit-content;
+    }
+    .btn-kalkuker:hover { background: #cdf577; }
+
+    /* FILTER */
+    .filter-rad {
+      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-lbl { font-size: 0.82rem; color: var(--muted); margin-right: 4px; }
+    .filter-btn {
+      padding: 6px 16px; border-radius: 100px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.83rem; font-weight: 500;
+      cursor: pointer; border: 1.5px solid rgba(255,255,255,0.1);
+      background: transparent; color: var(--muted); transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--lime); color: var(--lime); }
+    .filter-btn.aktiv { background: rgba(182,240,96,0.12); border-color: var(--lime); color: var(--lime); }
+    .resultat-info { font-size: 0.82rem; color: var(--muted); margin-left: auto; }
+
+    /* TABELL */
+    .tabell-wrap { border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.07); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: rgba(182,240,96,0.05); }
+    thead th {
+      padding: 13px 16px; text-align: left;
+      font-size: 0.75rem; font-weight: 600; color: var(--muted);
+      letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.07);
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody td { padding: 14px 16px; vertical-align: middle; }
+    .td-leverandor { display: flex; align-items: center; gap: 12px; }
+    .lev-logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(255,255,255,0.07);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .lev-navn { font-weight: 600; font-size: 0.95rem; }
+    .lev-type { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .td-pris { font-weight: 600; font-size: 1rem; }
+    .td-pris .pris-paslag { font-size: 0.8rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+    .td-arskost { color: var(--lime); font-weight: 600; }
+    .td-arskost.ingen { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+    .badge-type {
+      display: inline-block; padding: 3px 10px; border-radius: 100px;
+      font-size: 0.73rem; font-weight: 600;
+    }
+    .badge-spot { background: rgba(182,240,96,0.12); color: var(--lime); }
+    .badge-fast { background: rgba(100,160,255,0.12); color: #90b8ff; }
+    .badge-var  { background: rgba(255,200,80,0.12); color: #ffc850; }
+
+    .btn-bytt {
+      padding: 8px 20px; border-radius: 100px;
+      background: var(--lime); color: var(--dark);
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+      border: none; cursor: pointer; white-space: nowrap;
+      transition: background 0.2s; text-decoration: none; display: inline-block;
+    }
+    .btn-bytt:hover { background: #cdf577; }
+    .btn-bytt.minside {
+      background: transparent; border: 1.5px solid rgba(182,240,96,0.3);
+      color: var(--lime);
+    }
+    .btn-bytt.minside:hover { background: rgba(182,240,96,0.1); }
+
+    /* BESTE-MERKE */
+    tbody tr.beste { background: rgba(182,240,96,0.04); }
+    tbody tr.beste .lev-navn::after {
+      content: ' 🏆';
+      font-size: 0.8rem;
+    }
+
+    /* MOBIL TABELL */
+    .mobil-info {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      font-size: 0.88rem; color: var(--muted); line-height: 1.6;
+    }
+    .mobil-info strong { color: var(--text); }
+
+    /* FOOTER CTA */
+    .footer-cta {
+      background: linear-gradient(135deg, var(--green) 0%, var(--mid) 100%);
+      border: 1px solid rgba(182,240,96,0.2);
+      border-radius: 20px;
+      padding: 48px 40px;
+      text-align: center;
+      margin-top: 48px;
+    }
+    .footer-cta h2 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; margin-bottom: 10px; }
+    .footer-cta p { color: rgba(255,255,255,0.7); margin-bottom: 24px; font-size: 0.95rem; }
+    .btn-stor {
+      display: inline-block; padding: 14px 32px;
+      background: var(--lime); color: var(--dark);
+      border-radius: 100px; font-weight: 600; font-size: 1rem;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .btn-stor:hover { background: #cdf577; }
+
+    @media (max-width: 600px) {
+      nav { padding: 14px 16px; }
+      .nav-links .nav-link:not(.nav-cta) { display: none; }
+      thead th:nth-child(3), tbody td:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Bytte<span>hjelpern</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Hjem</a>
+    <a href="minside.html" class="nav-link">Logg inn</a>
+    <a href="minside.html" class="nav-link nav-cta">La oss bytte for deg →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Sammenlign og <em>spar</em></h1>
+  <p>Se alle avtaler på ett sted. Bytt selv, eller la oss gjøre det for deg.</p>
+</div>
+
+<div class="faner-wrap">
+  <div class="faner">
+    <button class="fane-btn aktiv" onclick="byttFane('strom', this)">⚡ Strøm</button>
+    <button class="fane-btn" onclick="byttFane('mobil', this)">📱 Mobil</button>
+  </div>
+</div>
+
+<div class="innhold">
+
+  <!-- ── STRØM ── -->
+  <div class="tab-content aktiv" id="tab-strom">
+
+    <div class="kalkulator">
+      <div class="kalk-tittel">🔢 Beregn din årskostnad</div>
+      <div class="kalk-rad">
+        <div class="kalk-gruppe">
+          <label>Forventet årsforbruk (kWh)</label>
+          <input type="number" id="kalkForbruk" placeholder="f.eks. 16000" min="0" max="100000" oninput="oppdaterTabell()" />
+        </div>
+        <div class="kalk-gruppe">
+          <label>Strømområde</label>
+          <select id="kalkOmraade" onchange="oppdaterTabell()">
+            <option value="">Velg område...</option>
+            <option value="NO1">NO1 – Oslo / Øst</option>
+            <option value="NO2">NO2 – Kristiansand / Sør</option>
+            <option value="NO3">NO3 – Trondheim / Midt</option>
+            <option value="NO4">NO4 – Tromsø / Nord</option>
+            <option value="NO5">NO5 – Bergen / Vest</option>
+          </select>
+        </div>
+        <div class="kalk-gruppe">
+          <label>Nettleie (øre/kWh)</label>
+          <input type="number" id="kalkNettleie" placeholder="f.eks. 45" min="0" max="200" oninput="oppdaterTabell()" />
+        </div>
+        <button class="btn-kalkuker" onclick="oppdaterTabell()">Beregn</button>
+      </div>
+    </div>
+
+    <div class="filter-rad">
+      <span class="filter-lbl">Avtaletype:</span>
+      <button class="filter-btn aktiv" onclick="byttFilter('alle', this)">Alle</button>
+      <button class="filter-btn" onclick="byttFilter('spot', this)">Spotpris</button>
+      <button class="filter-btn" onclick="byttFilter('fast', this)">Fastpris</button>
+      <button class="filter-btn" onclick="byttFilter('variabel', this)">Variabel</button>
+      <span class="resultat-info" id="antallResultater"></span>
+    </div>
+
+    <div class="tabell-wrap">
+      <table id="stromTabell">
+        <thead>
+          <tr>
+            <th>Leverandør</th>
+            <th>Påslag / Pris</th>
+            <th>Avtaletype</th>
+            <th>Est. årskostnad</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="stromTabellBody">
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:14px;text-align:center;">
+      * Priser er veiledende og basert på offentlig tilgjengelig informasjon. Spotpris varierer daglig.
+      Bruk kalkulatoren for estimert årskostnad basert på ditt forbruk.
+    </p>
+  </div>
+
+  <!-- ── MOBIL ── -->
+  <div class="tab-content" id="tab-mobil">
+
+    <div class="mobil-info">
+      <strong>Slik sammenlignes prisene:</strong> Vi viser månedsprisen på de mest populære abonnementene.
+      Trykk "Bytt nå" for å gå til leverandørens nettside, eller <a href="minside.html" style="color:var(--lime)">opprett konto</a> og la oss bytte for deg.
+    </div>
+
+    <div class="filter-rad">
+      <span class="filter-lbl">Data:</span>
+      <button class="filter-btn aktiv" onclick="byttMobilFilter('alle', this)">Alle</button>
+      <button class="filter-btn" onclick="byttMobilFilter('lav', this)">Under 200 kr</button>
+      <button class="filter-btn" onclick="byttMobilFilter('mid', this)">200–400 kr</button>
+      <button class="filter-btn" onclick="byttMobilFilter('hoy', this)">Over 400 kr</button>
+      <span class="resultat-info" id="antallMobil"></span>
+    </div>
+
+    <div class="tabell-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Leverandør</th>
+            <th>Abonnement</th>
+            <th>Data</th>
+            <th>Månedspris</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="mobilTabellBody"></tbody>
+      </table>
+    </div>
+
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:14px;text-align:center;">
+      * Priser er veiledende og kan endres. Sjekk alltid hos leverandøren for gjeldende pris.
+    </p>
+  </div>
+
+  <!-- FOOTER CTA -->
+  <div class="footer-cta">
+    <h2>Vil du at vi bytter for deg?</h2>
+    <p>Opprett konto gratis — vi varsler deg og bytter automatisk når vi finner noe billigere.</p>
+    <a href="minside.html" class="btn-stor">Kom i gang gratis →</a>
+  </div>
+
+</div>
+
+<script>
+  // ── SPOTPRIS PER OMRÅDE (øre/kWh) — oppdateres manuelt inntil API ────────
+  // Kilde: Nord Pool snitt siste 30 dager (veiledende)
+  const SPOTPRIS = { NO1: 82, NO2: 80, NO3: 65, NO4: 55, NO5: 78 };
+
+  // ── STRØMLEVERANDØRER ─────────────────────────────────────────────────────
+  // paslag = øre/kWh over spot | fastpris = øre/kWh total | mnd = månedlig fastbeløp kr
+  const STROM = [
+    { navn: "Tibber",         emoji: "⚡", type: "spot",     paslag: 0,    mnd: 49,  url: "https://tibber.com/no" },
+    { navn: "Cheap Energy",   emoji: "💚", type: "spot",     paslag: 0,    mnd: 39,  url: "https://cheapenergy.no" },
+    { navn: "Agva Kraft",     emoji: "🌊", type: "spot",     paslag: 0,    mnd: 29,  url: "https://agva.no" },
+    { navn: "Klarkraft",      emoji: "☀️", type: "spot",     paslag: 1,    mnd: 29,  url: "https://klarkraft.no" },
+    { navn: "Kilden Kraft",   emoji: "🌿", type: "spot",     paslag: 1,    mnd: 39,  url: "https://kildenkraft.no" },
+    { navn: "Bærum Energi",   emoji: "🔋", type: "spot",     paslag: 1,    mnd: 29,  url: "https://baerum-energi.no" },
+    { navn: "Ishavskraft",    emoji: "❄️", type: "spot",     paslag: 2,    mnd: 39,  url: "https://ishavskraft.no" },
+    { navn: "Fortum",         emoji: "🌍", type: "spot",     paslag: 3,    mnd: 49,  url: "https://fortum.no" },
+    { navn: "Fjordkraft",     emoji: "🏔️", type: "spot",     paslag: 4,    mnd: 59,  url: "https://fjordkraft.no" },
+    { navn: "NorgesEnergi",   emoji: "⚡", type: "variabel", fastpris: 95, mnd: 49,  url: "https://norgesenergi.no" },
+    { navn: "Lyse Energi",    emoji: "💡", type: "variabel", fastpris: 98, mnd: 39,  url: "https://lyse.no" },
+    { navn: "Hafslund",       emoji: "🔌", type: "spot",     paslag: 5,    mnd: 69,  url: "https://hafslund.no" },
+    { navn: "Fortum Fastpris",emoji: "🔒", type: "fast",     fastpris: 110,mnd: 0,   url: "https://fortum.no" },
+    { navn: "Fjordkraft Fast", emoji: "🔒",type: "fast",     fastpris: 112,mnd: 0,   url: "https://fjordkraft.no" },
+  ];
+
+  // ── MOBILABONNEMENT ───────────────────────────────────────────────────────
+  const MOBIL = [
+    { navn: "Talkmore",    emoji: "📞", abbo: "Talkmore S",     data: "4 GB",      pris: 179, url: "https://talkmore.no" },
+    { navn: "Talkmore",    emoji: "📞", abbo: "Talkmore M",     data: "15 GB",     pris: 249, url: "https://talkmore.no" },
+    { navn: "ice",         emoji: "🧊", abbo: "ice Fri data",   data: "Ubegrenset",pris: 249, url: "https://ice.no" },
+    { navn: "Chilimobil",  emoji: "🌶️", abbo: "5 GB",           data: "5 GB",      pris: 99,  url: "https://chilimobil.no" },
+    { navn: "Chilimobil",  emoji: "🌶️", abbo: "15 GB",          data: "15 GB",     pris: 179, url: "https://chilimobil.no" },
+    { navn: "OneCall",     emoji: "1️⃣", abbo: "OneCall S",      data: "5 GB",      pris: 199, url: "https://onecall.no" },
+    { navn: "OneCall",     emoji: "1️⃣", abbo: "OneCall M",      data: "20 GB",     pris: 299, url: "https://onecall.no" },
+    { navn: "PlussMobil",  emoji: "➕", abbo: "0–1 GB",         data: "1 GB",      pris: 149, url: "https://plussmobil.no" },
+    { navn: "PlussMobil",  emoji: "➕", abbo: "10 GB+",         data: "10 GB",     pris: 249, url: "https://plussmobil.no" },
+    { navn: "Lyca Mobile", emoji: "🌐", abbo: "Lyca S",         data: "5 GB",      pris: 129, url: "https://lycamobile.no" },
+    { navn: "Telia",       emoji: "🟣", abbo: "Telia Smart S",  data: "10 GB",     pris: 299, url: "https://telia.no" },
+    { navn: "Telia",       emoji: "🟣", abbo: "Telia Smart M",  data: "30 GB",     pris: 399, url: "https://telia.no" },
+    { navn: "Telenor",     emoji: "📡", abbo: "Telenor Smart S",data: "10 GB",     pris: 319, url: "https://telenor.no" },
+    { navn: "Telenor",     emoji: "📡", abbo: "Telenor Smart M",data: "30 GB",     pris: 419, url: "https://telenor.no" },
+  ];
+
+  let aktivFilter = 'alle';
+  let aktivMobilFilter = 'alle';
+
+  // ── STRØM: BEREGN ÅRSKOSTNAD ─────────────────────────────────────────────
+  function beregnAarskost(lev, forbruk, omraade, nettleie) {
+    if (!forbruk || !omraade) return null;
+    const spot = SPOTPRIS[omraade] || 80;
+    const nett = nettleie || 0;
+    let orePerKwh;
+    if (lev.type === 'spot')     orePerKwh = spot + (lev.paslag || 0);
+    if (lev.type === 'variabel') orePerKwh = lev.fastpris;
+    if (lev.type === 'fast')     orePerKwh = lev.fastpris;
+    const strøm   = (orePerKwh / 100) * forbruk;
+    const nettKr  = (nett / 100) * forbruk;
+    const mndKr   = (lev.mnd || 0) * 12;
+    return Math.round(strøm + nettKr + mndKr);
+  }
+
+  function oppdaterTabell() {
+    const forbruk   = parseInt(document.getElementById('kalkForbruk').value) || null;
+    const omraade   = document.getElementById('kalkOmraade').value || null;
+    const nettleie  = parseFloat(document.getElementById('kalkNettleie').value) || null;
+
+    let data = STROM.filter(l => aktivFilter === 'alle' || l.type === aktivFilter);
+
+    // Beregn og sorter
+    data = data.map(l => ({ ...l, arskost: beregnAarskost(l, forbruk, omraade, nettleie) }));
+    if (forbruk && omraade) {
+      data.sort((a, b) => (a.arskost || 999999) - (b.arskost || 999999));
+    }
+
+    const tbody = document.getElementById('stromTabellBody');
+    tbody.innerHTML = data.map((l, i) => {
+      const badgeKlass = l.type === 'spot' ? 'badge-spot' : l.type === 'fast' ? 'badge-fast' : 'badge-var';
+      const badgeTekst = l.type === 'spot' ? 'Spotpris' : l.type === 'fast' ? 'Fastpris' : 'Variabel';
+      const prisTekst  = l.type === 'spot'
+        ? `+${l.paslag} øre/kWh<div class="pris-paslag">+ ${l.mnd} kr/mnd</div>`
+        : `${l.fastpris} øre/kWh`;
+      const arskostTekst = l.arskost
+        ? `<span class="td-arskost">${l.arskost.toLocaleString('no-NO')} kr</span>`
+        : `<span class="td-arskost ingen">Fyll inn forbruk</span>`;
+
+      return `<tr class="${i === 0 && forbruk && omraade ? 'beste' : ''}">
+        <td><div class="td-leverandor">
+          <div class="lev-logo">${l.emoji}</div>
+          <div><div class="lev-navn">${l.navn}</div></div>
+        </div></td>
+        <td class="td-pris">${prisTekst}</td>
+        <td><span class="badge-type ${badgeKlass}">${badgeTekst}</span></td>
+        <td>${arskostTekst}</td>
+        <td>
+          <a href="${l.url}" target="_blank" class="btn-bytt">Bytt nå</a>
+        </td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('antallResultater').textContent = `${data.length} avtaler`;
+  }
+
+  // ── MOBIL: TABELL ─────────────────────────────────────────────────────────
+  function oppdaterMobilTabell() {
+    let data = [...MOBIL];
+    if (aktivMobilFilter === 'lav') data = data.filter(m => m.pris < 200);
+    if (aktivMobilFilter === 'mid') data = data.filter(m => m.pris >= 200 && m.pris <= 400);
+    if (aktivMobilFilter === 'hoy') data = data.filter(m => m.pris > 400);
+    data.sort((a, b) => a.pris - b.pris);
+
+    document.getElementById('mobilTabellBody').innerHTML = data.map((m, i) => `
+      <tr class="${i === 0 ? 'beste' : ''}">
+        <td><div class="td-leverandor">
+          <div class="lev-logo">${m.emoji}</div>
+          <div class="lev-navn">${m.navn}</div>
+        </div></td>
+        <td>${m.abbo}</td>
+        <td style="color:var(--muted)">${m.data}</td>
+        <td class="td-pris">${m.pris} kr<div class="pris-paslag">per mnd</div></td>
+        <td><a href="${m.url}" target="_blank" class="btn-bytt">Bytt nå</a></td>
+      </tr>`).join('');
+
+    document.getElementById('antallMobil').textContent = `${data.length} abonnement`;
+  }
+
+  // ── FILTERE ───────────────────────────────────────────────────────────────
+  function byttFilter(filter, btn) {
+    aktivFilter = filter;
+    document.querySelectorAll('#tab-strom .filter-btn').forEach(b => b.classList.remove('aktiv'));
+    btn.classList.add('aktiv');
+    oppdaterTabell();
+  }
+
+  function byttMobilFilter(filter, btn) {
+    aktivMobilFilter = filter;
+    document.querySelectorAll('#tab-mobil .filter-btn').forEach(b => b.classList.remove('aktiv'));
+    btn.classList.add('aktiv');
+    oppdaterMobilTabell();
+  }
+
+  function byttFane(fane, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('aktiv'));
+    document.querySelectorAll('.fane-btn').forEach(b => b.classList.remove('aktiv'));
+    document.getElementById('tab-' + fane).classList.add('aktiv');
+    btn.classList.add('aktiv');
+  }
+
+  // Init
+  oppdaterTabell();
+  oppdaterMobilTabell();
+</script>
+</body>
+</html>

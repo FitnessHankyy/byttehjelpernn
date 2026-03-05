@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Byttehjelpern</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--lime:#b6f060;--dark:#0d1f14;--card:#152a1e;--text:#e8f5ee;--muted:#7aac8e;--red:#f87171;--gold:#fbbf24;--radius:14px}
+    body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(13,31,20,0.97);border-bottom:1px solid rgba(182,240,96,0.08);position:sticky;top:0;z-index:100}
+    .logo{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--lime)}.logo span{color:var(--text)}
+    .admin-badge{background:rgba(182,240,96,0.12);border:1px solid rgba(182,240,96,0.25);color:var(--lime);font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:1.5px;text-transform:uppercase}
+    .btn-sm{padding:7px 16px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.1);transition:all .2s}
+    .btn-sm:hover{border-color:var(--lime);color:var(--lime)}
+    .laster{display:flex;min-height:calc(100vh - 60px);align-items:center;justify-content:center;color:var(--muted);gap:10px}
+    .spinner{width:18px;height:18px;border:2px solid rgba(182,240,96,0.2);border-top-color:var(--lime);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ingen-tilgang{display:none;min-height:calc(100vh - 60px);align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:40px}
+    .admin-wrap{max-width:1200px;margin:0 auto;padding:36px 24px;display:none}
+    .page-title{font-family:'DM Serif Display',serif;font-size:2rem;margin-bottom:4px}
+    .page-sub{color:var(--muted);font-size:0.88rem;margin-bottom:28px}
+    .admin-tabs{display:flex;gap:4px;margin-bottom:24px;background:rgba(255,255,255,0.03);border-radius:12px;padding:4px;border:1px solid rgba(255,255,255,0.06);width:fit-content;flex-wrap:wrap}
+    .tab-btn{padding:8px 16px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.83rem;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .tab-btn.aktiv{background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.08)}
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+    .stat-kort{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:18px}
+    .stat-lbl{font-size:0.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+    .stat-val{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--lime);line-height:1}
+    .stat-sub{font-size:0.75rem;color:var(--muted);margin-top:4px}
+    .graf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:24px}
+    .graf-kort{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:18px}
+    .graf-tittel{font-size:0.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+    .seksjon{margin-bottom:32px}
+    .seksjon-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .seksjon-tittel{font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime)}
+    .seksjon-count{font-size:0.75rem;color:var(--muted);background:rgba(255,255,255,0.04);padding:3px 10px;border-radius:100px}
+    .tabell-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.07)}
+    table{width:100%;border-collapse:collapse;font-size:0.83rem}
+    th{padding:11px 14px;text-align:left;font-size:0.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,0.02);border-bottom:1px solid rgba(255,255,255,0.07);white-space:nowrap}
+    td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(255,255,255,0.02)}
+    .muted{color:var(--muted)}
+    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:600;white-space:nowrap}
+    .badge-green{background:rgba(182,240,96,0.12);color:var(--lime)}
+    .badge-grey{background:rgba(255,255,255,0.06);color:var(--muted)}
+    .maaler-rad{font-size:0.78rem;margin-bottom:5px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:7px;line-height:1.5}
+    .sok-input{padding:9px 16px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.87rem;outline:none;width:100%;max-width:320px;margin-bottom:14px}
+    .sok-input:focus{border-color:var(--lime)}
+    .bruker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+    .bruker-kort{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:16px}
+    .bruker-navn{font-weight:600;font-size:0.93rem;margin-bottom:3px}
+    .bruker-epost{font-size:0.76rem;color:var(--muted);margin-bottom:10px}
+    .bruker-data-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .bruker-felt{background:rgba(255,255,255,0.03);border-radius:7px;padding:7px 9px}
+    .bruker-felt-lbl{font-size:0.66rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+    .bruker-felt-val{font-size:0.8rem;font-weight:500}
+    .paamelding-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+    .paamelding-kort{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .btn-oppdater{padding:9px 20px;border-radius:100px;background:rgba(182,240,96,0.1);border:1px solid rgba(182,240,96,0.2);color:var(--lime);font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;margin-bottom:22px;transition:all .2s}
+    .btn-oppdater:hover{background:rgba(182,240,96,0.2)}
+    .tab-innhold{display:none}.tab-innhold.aktiv{display:block}
+    @media(max-width:700px){nav{padding:12px 16px}.admin-wrap{padding:18px 12px}}
+  </style>
+</head>
+<body>
+<nav>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="logo">Bytte<span>hjelpern</span></div>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span id="sistOppdatert" style="font-size:0.76rem;color:var(--muted)"></span>
+    <a href="minside.html" style="color:var(--muted);font-size:0.82rem;text-decoration:none">← Min side</a>
+    <button class="btn-sm" onclick="handleLogout()">Logg ut</button>
+  </div>
+</nav>
+
+<div class="laster" id="laster"><div class="spinner"></div> Laster...</div>
+<div class="ingen-tilgang" id="ingenTilgang">
+  <div style="font-size:3rem">🔒</div>
+  <h1 style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--red)">Ingen tilgang</h1>
+  <p style="color:var(--muted)">Kun for administratorer.</p>
+  <a href="index.html" style="color:var(--lime);font-size:0.9rem">← Forsiden</a>
+</div>
+
+<div class="admin-wrap" id="adminWrap">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px">
+    <div>
+      <h1 class="page-title">Admin-oversikt</h1>
+      <p class="page-sub">Full oversikt over brukere, avtaler og aktivitet</p>
+    </div>
+    <button class="btn-oppdater" onclick="lastData()">🔄 Oppdater</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-kort"><div class="stat-lbl">Registrerte</div><div class="stat-val" id="statBrukere">—</div><div class="stat-sub">Brukere med konto</div></div>
+    <div class="stat-kort"><div class="stat-lbl">Profiler</div><div class="stat-val" id="statProfiler">—</div><div class="stat-sub">Navn og adresse</div></div>
+    <div class="stat-kort"><div class="stat-lbl">Strømmålere</div><div class="stat-val" id="statAvtaler">—</div><div class="stat-sub">Totalt registrert</div></div>
+    <div class="stat-kort"><div class="stat-lbl">Samtykker</div><div class="stat-val" id="statSamtykker">—</div><div class="stat-sub">Klare for bytte</div></div>
+    <div class="stat-kort"><div class="stat-lbl">Mobilavtaler</div><div class="stat-val" id="statMobil">—</div><div class="stat-sub">Registrert</div></div>
+    <div class="stat-kort"><div class="stat-lbl">Bredbånd</div><div class="stat-val" id="statBredband">—</div><div class="stat-sub">Registrert</div></div>
+    <div class="stat-kort"><div class="stat-lbl">Venteliste</div><div class="stat-val" id="statPaameldinger">—</div><div class="stat-sub">E-post påmeldinger</div></div>
+  </div>
+
+  <div class="graf-grid">
+    <div class="graf-kort"><div class="graf-tittel">📱 Mobiloperatører</div><div style="position:relative;height:180px"><canvas id="grafMobil"></canvas></div></div>
+    <div class="graf-kort"><div class="graf-tittel">⚡ Strømleverandører</div><div style="position:relative;height:180px"><canvas id="grafStrom"></canvas></div></div>
+    <div class="graf-kort"><div class="graf-tittel">📡 Bredbåndsleverandører</div><div style="position:relative;height:180px"><canvas id="grafBredband"></canvas></div></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="tab-btn aktiv" onclick="byttTab('brukere',this)">👥 Brukere</button>
+    <button class="tab-btn" onclick="byttTab('strom',this)">⚡ Strøm</button>
+    <button class="tab-btn" onclick="byttTab('mobil',this)">📱 Mobil</button>
+    <button class="tab-btn" onclick="byttTab('bredband',this)">📡 Bredbånd</button>
+    <button class="tab-btn" onclick="byttTab('forsikring',this)">🛡️ Forsikring</button>
+    <button class="tab-btn" onclick="byttTab('paameldinger',this)">📧 Venteliste</button>
+  </div>
+
+  <div class="tab-innhold aktiv" id="tab-brukere">
+    <div class="seksjon">
+      <div class="seksjon-header"><div class="seksjon-tittel">Alle brukere</div><span class="seksjon-count" id="brukerCount">—</span></div>
+      <input class="sok-input" type="text" placeholder="🔍 Søk navn, e-post, poststed..." oninput="filtrerBrukere(this.value)" />
+      <div class="bruker-grid" id="brukerGrid"><div class="muted">Laster...</div></div>
+    </div>
+  </div>
+
+  <div class="tab-innhold" id="tab-strom">
+    <div class="seksjon">
+      <div class="seksjon-header"><div class="seksjon-tittel">Strømavtaler</div><span class="seksjon-count" id="stromCount">—</span></div>
+      <div class="tabell-wrap"><table>
+        <thead><tr><th>Navn</th><th>Adresse</th><th>Målere</th><th>Samtykke</th><th>Oppstart</th><th>Faktura</th><th>Dato</th></tr></thead>
+        <tbody id="avtalerTabell"><tr><td colspan="7" class="muted" style="text-align:center;padding:20px">Laster...</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="tab-innhold" id="tab-mobil">
+    <div class="seksjon">
+      <div class="seksjon-header"><div class="seksjon-tittel">Mobilavtaler</div><span class="seksjon-count" id="mobilCount">—</span></div>
+      <div class="tabell-wrap"><table>
+        <thead><tr><th>Navn</th><th>Operatør</th><th>Data</th><th>Pris/mnd</th><th>Antall</th><th>Dato</th></tr></thead>
+        <tbody id="mobilTabell"><tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Laster...</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="tab-innhold" id="tab-bredband">
+    <div class="seksjon">
+      <div class="seksjon-header"><div class="seksjon-tittel">Bredbåndsavtaler</div><span class="seksjon-count" id="bredbandCount">—</span></div>
+      <div class="tabell-wrap"><table>
+        <thead><tr><th>Navn</th><th>Leverandør</th><th>Hastighet</th><th>Pris/mnd</th><th>Dato</th></tr></thead>
+        <tbody id="bredbandTabell"><tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Laster...</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="tab-innhold" id="tab-forsikring">
+    <div class="seksjon">
+      <div class="seksjon-header"><div class="seksjon-tittel">Forsikring</div><span class="seksjon-count" id="forsikringCount">—</span></div>
+      <div class="tabell-wrap"><table>
+        <thead><tr><th>Navn</th><th>Selskap</th><th>Pris/mnd</th><th>Hva</th><th>Sist sjekket</th></tr></thead>
+        <tbody id="forsikringTabell"><tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Laster...</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="tab-innhold" id="tab-paameldinger">
+    <div class="seksjon">
+      <div class="seksjon-header"><div class="seksjon-tittel">Venteliste</div><span class="seksjon-count" id="paameldingerCount">—</span></div>
+      <div class="paamelding-grid" id="paameldingGrid"><div class="muted">Laster...</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const ADMIN_EMAIL = 'henrik.andre@outlook.com';
+  const { createClient } = supabase;
+  const db = createClient('https://infvmrapalancgwhuvhh.supabase.co','sb_publishable_aCpIUWseYZBrXZZdkvsGkQ_3nuGk4ws');
+  let alleBrukere = [];
+
+  function vis(id,t='flex'){document.getElementById(id).style.display=t}
+  function skjul(id){document.getElementById(id).style.display='none'}
+  function dato(iso){if(!iso)return'—';return new Date(iso).toLocaleDateString('no-NO',{day:'2-digit',month:'short',year:'numeric'})}
+
+  function byttTab(id,btn){
+    document.querySelectorAll('.tab-innhold').forEach(t=>t.classList.remove('aktiv'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('aktiv'));
+    document.getElementById('tab-'+id).classList.add('aktiv');
+    btn.classList.add('aktiv');
+  }
+
+  function filtrerBrukere(q){
+    const s=q.toLowerCase();
+    renderBrukerGrid(alleBrukere.filter(b=>(b.navn||'').toLowerCase().includes(s)||(b.epost||'').toLowerCase().includes(s)||(b.poststed||'').toLowerCase().includes(s)));
+  }
+
+  function renderBrukerGrid(liste){
+    const el=document.getElementById('brukerGrid');
+    if(!liste.length){el.innerHTML='<p class="muted">Ingen brukere funnet.</p>';return}
+    el.innerHTML=liste.map(b=>`
+      <div class="bruker-kort">
+        <div class="bruker-navn">${b.navn||'<span class="muted">Ikke fylt inn</span>'}</div>
+        <div class="bruker-epost">${b.epost||'—'}</div>
+        <div class="bruker-data-grid">
+          <div class="bruker-felt"><div class="bruker-felt-lbl">Telefon</div><div class="bruker-felt-val">${b.telefon||'—'}</div></div>
+          <div class="bruker-felt"><div class="bruker-felt-lbl">Poststed</div><div class="bruker-felt-val">${b.postnummer?b.postnummer+' '+b.poststed:'—'}</div></div>
+          <div class="bruker-felt"><div class="bruker-felt-lbl">Årslønn</div><div class="bruker-felt-val">${b.lonn_aar?parseInt(b.lonn_aar).toLocaleString('no-NO')+' kr':'—'}</div></div>
+          <div class="bruker-felt"><div class="bruker-felt-lbl">Bolig</div><div class="bruker-felt-val">${b.bolig==='eier'?'🏠 Eier':b.bolig==='leier'?'🏢 Leier':'—'}</div></div>
+          <div class="bruker-felt"><div class="bruker-felt-lbl">Strøm</div><div class="bruker-felt-val">${b.harStrom?'<span style="color:var(--lime)">✓ Ja</span>':'<span class="muted">–</span>'}</div></div>
+          <div class="bruker-felt"><div class="bruker-felt-lbl">Samtykke</div><div class="bruker-felt-val">${b.samtykke?'<span style="color:var(--lime)">✓ Ja</span>':'<span class="muted">Nei</span>'}</div></div>
+        </div>
+      </div>`).join('');
+  }
+
+  function lagGraf(canvasId,labels,data){
+    const ctx=document.getElementById(canvasId);
+    if(!ctx||!data.length)return;
+    const colors=['rgba(182,240,96,.8)','rgba(96,165,250,.8)','rgba(251,191,36,.8)','rgba(167,139,250,.8)','rgba(248,113,113,.8)','rgba(52,211,153,.8)'];
+    new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors.slice(0,data.length),borderWidth:0}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'rgba(255,255,255,.6)',font:{size:10},padding:8,boxWidth:10}}}}});
+  }
+
+  async function lastData(){
+    document.getElementById('sistOppdatert').textContent='Oppdaterer...';
+    const [
+      {data:avtaler},{data:profiler},{data:mobilData},
+      {data:bredbandData},{data:forsikringData},{data:paameldinger}
+    ] = await Promise.all([
+      db.from('strom_avtaler').select('*').order('created_at',{ascending:false}),
+      db.from('profiler').select('*'),
+      db.from('mobil_avtaler').select('*'),
+      db.from('bredband_avtaler').select('*'),
+      db.from('forsikring_avtaler').select('*'),
+      db.from('paameldinger').select('*').order('created_at',{ascending:false})
+    ]);
+
+    const pMap={},sMap={};
+    (profiler||[]).forEach(p=>pMap[p.user_id]=p);
+    (avtaler||[]).forEach(a=>sMap[a.user_id]=a);
+
+    let maalere=0,samtykker=0,profFylt=0;
+    (avtaler||[]).forEach(a=>{let m=[];try{m=JSON.parse(a.maalere||'[]')}catch(e){}maalere+=m.length||(a.leverandor?1:0);if(a.samtykke)samtykker++});
+    (profiler||[]).forEach(p=>{if(p.fornavn)profFylt++});
+
+    document.getElementById('statBrukere').textContent=(profiler||[]).length||(avtaler||[]).length;
+    document.getElementById('statProfiler').textContent=profFylt;
+    document.getElementById('statAvtaler').textContent=maalere;
+    document.getElementById('statSamtykker').textContent=samtykker;
+    document.getElementById('statMobil').textContent=(mobilData||[]).length;
+    document.getElementById('statBredband').textContent=(bredbandData||[]).length;
+    document.getElementById('statPaameldinger').textContent=(paameldinger||[]).length;
+
+    // Brukere
+    const uids=[...new Set([...(profiler||[]).map(p=>p.user_id),...(avtaler||[]).map(a=>a.user_id)])];
+    alleBrukere=uids.map(uid=>{
+      const p=pMap[uid]||{},s=sMap[uid]||{};
+      return{navn:p.fornavn?p.fornavn+' '+p.etternavn:null,epost:p.epost,telefon:p.telefon,
+        adresse:p.adresse,postnummer:p.postnummer,poststed:p.poststed,
+        lonn_aar:p.lonn_aar,bolig:p.bolig,harStrom:!!s.user_id,samtykke:s.samtykke};
+    });
+    document.getElementById('brukerCount').textContent=alleBrukere.length+' brukere';
+    renderBrukerGrid(alleBrukere);
+
+    // Strøm
+    document.getElementById('stromCount').textContent=(avtaler||[]).length+' avtaler';
+    document.getElementById('avtalerTabell').innerHTML=(avtaler||[]).map(a=>{
+      const p=pMap[a.user_id]||{};let m=[];try{m=JSON.parse(a.maalere||'[]')}catch(e){}
+      if(!m.length&&a.leverandor)m=[{navn:'Hjemme',leverandor:a.leverandor,avtaletype:a.avtaletype,forbruk:a.forbruk_kwh}];
+      const mHtml=m.map(x=>`<div class="maaler-rad"><strong>${x.navn||'Ukjent'}</strong> · ${x.leverandor||'—'} · ${x.avtaletype||'—'}${x.forbruk?' · '+parseInt(x.forbruk).toLocaleString('no-NO')+' kWh':''}${x.malernr?'<br/><span class="muted" style="font-size:.74rem">📟 '+x.malernr+'</span>':''}</div>`).join('');
+      const navn=p.fornavn?`<strong>${p.fornavn} ${p.etternavn}</strong>`:'<span class="muted">—</span>';
+      const adr=p.adresse?`${p.adresse}<br/><span class="muted" style="font-size:.76rem">${p.postnummer||''} ${p.poststed||''}</span>`:'—';
+      return`<tr><td>${navn}</td><td class="muted" style="font-size:.8rem">${adr}</td><td>${mHtml||'<span class="muted">Ingen</span>'}</td><td>${a.samtykke?'<span class="badge badge-green">✓ Ja</span>':'<span class="badge badge-grey">Nei</span>'}</td><td class="muted">${a.oppstart||'—'}</td><td class="muted">${a.faktura||'—'}</td><td class="muted">${dato(a.created_at)}</td></tr>`;
+    }).join('')||'<tr><td colspan="7" class="muted" style="text-align:center;padding:20px">Ingen ennå</td></tr>';
+
+    // Mobil
+    document.getElementById('mobilCount').textContent=(mobilData||[]).length+' avtaler';
+    document.getElementById('mobilTabell').innerHTML=(mobilData||[]).map(m=>{
+      const p=pMap[m.user_id]||{};const navn=p.fornavn?`<strong>${p.fornavn} ${p.etternavn}</strong>`:'<span class="muted">—</span>';
+      return`<tr><td>${navn}</td><td>${m.operator||'—'}</td><td>${m.data_gb||'—'}</td><td>${m.pris?m.pris+' kr':'—'}</td><td>${m.antall||1}</td><td class="muted">${dato(m.sist_sjekket)}</td></tr>`;
+    }).join('')||'<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Ingen ennå</td></tr>';
+
+    // Bredbånd
+    document.getElementById('bredbandCount').textContent=(bredbandData||[]).length+' avtaler';
+    document.getElementById('bredbandTabell').innerHTML=(bredbandData||[]).map(b=>{
+      const p=pMap[b.user_id]||{};const navn=p.fornavn?`<strong>${p.fornavn} ${p.etternavn}</strong>`:'<span class="muted">—</span>';
+      return`<tr><td>${navn}</td><td>${b.leverandor||'—'}</td><td>${b.hastighet?b.hastighet+' Mbit/s':'—'}</td><td>${b.pris?b.pris+' kr':'—'}</td><td class="muted">${dato(b.sist_sjekket)}</td></tr>`;
+    }).join('')||'<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Ingen ennå</td></tr>';
+
+    // Forsikring
+    document.getElementById('forsikringCount').textContent=(forsikringData||[]).length+' avtaler';
+    document.getElementById('forsikringTabell').innerHTML=(forsikringData||[]).map(f=>{
+      const p=pMap[f.user_id]||{};const navn=p.fornavn?`<strong>${p.fornavn} ${p.etternavn}</strong>`:'<span class="muted">—</span>';
+      const hva=[f.bil&&'Bil',f.hjem&&'Innbo',f.hytte&&'Hytte',f.reise&&'Reise',f.person&&'Person'].filter(Boolean).join(', ')||'—';
+      return`<tr><td>${navn}</td><td>${f.selskap||'—'}</td><td>${f.pris?f.pris+' kr':'—'}</td><td class="muted" style="font-size:.8rem">${hva}</td><td class="muted">${dato(f.sist_sjekket)}</td></tr>`;
+    }).join('')||'<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">Ingen ennå</td></tr>';
+
+    // Påmeldinger
+    document.getElementById('paameldingerCount').textContent=(paameldinger||[]).length+' påmeldinger';
+    document.getElementById('paameldingGrid').innerHTML=(paameldinger||[]).map(p=>`
+      <div class="paamelding-kort">
+        <div><div style="font-size:.84rem;font-weight:500">📧 ${p.epost}</div><div class="muted" style="font-size:.74rem;margin-top:3px">${dato(p.created_at)}</div></div>
+      </div>`).join('')||'<div class="muted">Ingen påmeldinger ennå</div>';
+
+    // Grafer
+    const mobilT={};(mobilData||[]).forEach(m=>{if(m.operator)mobilT[m.operator]=(mobilT[m.operator]||0)+1});
+    const mL=Object.keys(mobilT).sort((a,b)=>mobilT[b]-mobilT[a]).slice(0,6);
+    lagGraf('grafMobil',mL,mL.map(l=>mobilT[l]));
+
+    const stromT={};(avtaler||[]).forEach(a=>{let m=[];try{m=JSON.parse(a.maalere||'[]')}catch(e){}
+      if(m.length)m.forEach(x=>{if(x.leverandor)stromT[x.leverandor]=(stromT[x.leverandor]||0)+1});
+      else if(a.leverandor)stromT[a.leverandor]=(stromT[a.leverandor]||0)+1});
+    const sL=Object.keys(stromT).sort((a,b)=>stromT[b]-stromT[a]).slice(0,6);
+    lagGraf('grafStrom',sL,sL.map(l=>stromT[l]));
+
+    const bbT={};(bredbandData||[]).forEach(b=>{if(b.leverandor)bbT[b.leverandor]=(bbT[b.leverandor]||0)+1});
+    const bL=Object.keys(bbT).sort((a,b)=>bbT[b]-bbT[a]).slice(0,6);
+    lagGraf('grafBredband',bL,bL.map(l=>bbT[l]));
+
+    document.getElementById('sistOppdatert').textContent='Oppdatert '+new Date().toLocaleTimeString('no-NO');
+  }
+
+  async function handleLogout(){await db.auth.signOut();window.location='index.html'}
+
+  db.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='INITIAL_SESSION'){
+      skjul('laster');
+      if(!session){window.location='minside.html';return}
+      if(session.user.email!==ADMIN_EMAIL){vis('ingenTilgang');return}
+      vis('adminWrap','block');
+      await lastData();
+    }
+  });
+</script>
+</body>
+</html>

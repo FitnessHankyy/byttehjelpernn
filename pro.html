@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byttehjelpern Pro – Full kontroll på privatøkonomien</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --lime:    #b6f060;
+      --dark:    #0d1f14;
+      --green:   #1a7a4a;
+      --card-bg: #152a1e;
+      --text:    #e8f5ee;
+      --muted:   #7aac8e;
+      --gold:    #fbbf24;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--text); }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px; background: rgba(13,31,20,0.97);
+      border-bottom: 1px solid rgba(182,240,96,0.08);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--lime); text-decoration: none; }
+    .logo span { color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { color: var(--muted); font-size: 0.88rem; text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .btn-nav {
+      padding: 9px 22px; border-radius: 100px; background: var(--lime);
+      color: var(--dark); font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 600; border: none; cursor: pointer;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .btn-nav:hover { background: #cdf577; }
+
+    /* HERO */
+    .pro-hero {
+      text-align: center; padding: 100px 24px 80px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(182,240,96,0.08) 0%, transparent 65%);
+    }
+    .pro-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3);
+      color: var(--gold); font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 6px 16px; border-radius: 100px; margin-bottom: 28px;
+    }
+    .pro-hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      line-height: 1.1; margin-bottom: 20px;
+    }
+    .pro-hero h1 em { color: var(--lime); font-style: normal; }
+    .pro-hero p {
+      font-size: 1.1rem; color: var(--muted); max-width: 540px;
+      margin: 0 auto 40px; line-height: 1.7;
+    }
+    .pro-pris-wrap { margin-bottom: 36px; }
+    .pro-pris { font-family: 'DM Serif Display', serif; font-size: 3.5rem; color: var(--text); line-height: 1; }
+    .pro-pris span { font-size: 1.2rem; color: var(--muted); }
+    .pro-pris-note { font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+    .btn-pro-hero {
+      padding: 16px 40px; border-radius: 100px; background: var(--lime);
+      color: var(--dark); font-family: 'DM Sans', sans-serif;
+      font-size: 1rem; font-weight: 700; border: none; cursor: pointer;
+      transition: all 0.2s; display: inline-block; text-decoration: none;
+    }
+    .btn-pro-hero:hover { background: #cdf577; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(182,240,96,0.25); }
+    .pro-garanti { font-size: 0.82rem; color: var(--muted); margin-top: 14px; }
+
+    /* FEATURES GRID */
+    .features-seksjon { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+    .seksjon-lbl {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--lime);
+      text-align: center; margin-bottom: 14px;
+    }
+    .seksjon-h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      text-align: center; margin-bottom: 56px; line-height: 1.2;
+    }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .feature-kort {
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 28px;
+      transition: border-color 0.2s;
+    }
+    .feature-kort:hover { border-color: rgba(182,240,96,0.2); }
+    .feature-ikon { font-size: 2rem; margin-bottom: 14px; }
+    .feature-tittel { font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
+    .feature-tekst { font-size: 0.86rem; color: var(--muted); line-height: 1.6; }
+    .feature-kort.highlight { border-color: rgba(182,240,96,0.2); background: rgba(182,240,96,0.04); }
+
+    /* SAMMENLIGNING */
+    .sammenlign-seksjon {
+      background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 80px 24px;
+    }
+    .sammenlign-wrap { max-width: 800px; margin: 0 auto; }
+    .sammenlign-tabell { width: 100%; border-collapse: collapse; margin-top: 40px; }
+    .sammenlign-tabell th {
+      padding: 14px 20px; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sammenlign-tabell th:nth-child(2) { color: var(--text); }
+    .sammenlign-tabell th:nth-child(3) { color: var(--gold); }
+    .sammenlign-tabell td {
+      padding: 14px 20px; font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .sammenlign-tabell td:nth-child(1) { color: var(--muted); }
+    .sammenlign-tabell td:nth-child(2), .sammenlign-tabell td:nth-child(3) { text-align: center; }
+    .check-pro { color: var(--lime); font-weight: 700; font-size: 1.1rem; }
+    .check-gratis { color: var(--text); font-weight: 700; }
+    .dash-grey { color: rgba(255,255,255,0.2); }
+
+    /* SPAR KALKULATOR */
+    .kalkulator-seksjon { max-width: 700px; margin: 0 auto; padding: 80px 24px; text-align: center; }
+    .kalkulator-kort {
+      background: var(--card-bg); border: 1px solid rgba(182,240,96,0.15);
+      border-radius: 20px; padding: 36px; margin-top: 40px; text-align: left;
+    }
+    .kalk-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+    .kalk-row:last-child { border-bottom: none; }
+    .kalk-lbl { color: var(--muted); }
+    .kalk-val { font-weight: 600; }
+    .kalk-total { background: rgba(182,240,96,0.08); border-radius: 12px; padding: 16px 20px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .kalk-total-lbl { font-weight: 600; }
+    .kalk-total-val { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--lime); }
+    .kalk-note { font-size: 0.78rem; color: var(--muted); margin-top: 12px; text-align: center; }
+
+    /* SIGNUP SEKSJON */
+    .signup-seksjon {
+      text-align: center; padding: 100px 24px;
+      background: radial-gradient(ellipse at 50% 100%, rgba(182,240,96,0.06) 0%, transparent 70%);
+    }
+    .signup-kort {
+      max-width: 480px; margin: 40px auto 0;
+      background: var(--card-bg); border: 1px solid rgba(182,240,96,0.2);
+      border-radius: 20px; padding: 36px;
+    }
+    .form-group { text-align: left; margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .form-group input {
+      width: 100%; padding: 12px 16px; border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--lime); }
+    .btn-signup-stor {
+      width: 100%; padding: 15px; border-radius: 100px;
+      background: var(--lime); color: var(--dark);
+      font-family: 'DM Sans', sans-serif; font-size: 1rem;
+      font-weight: 700; border: none; cursor: pointer;
+      transition: all 0.2s; margin-top: 8px;
+    }
+    .btn-signup-stor:hover { background: #cdf577; }
+    .signup-vilkaar { font-size: 0.76rem; color: var(--muted); margin-top: 14px; line-height: 1.5; }
+    .signup-vilkaar a { color: var(--lime); }
+    .success-wrap { display: none; text-align: center; padding: 20px 0; }
+    .success-wrap h3 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 10px; }
+    .success-wrap p { color: var(--muted); font-size: 0.9rem; }
+
+    /* FAQ */
+    .faq-seksjon { max-width: 700px; margin: 0 auto; padding: 60px 24px 100px; }
+    .faq-item { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .faq-sporsmal {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 0; cursor: pointer; font-weight: 500; font-size: 0.95rem;
+    }
+    .faq-pil { color: var(--lime); transition: transform 0.2s; font-size: 0.8rem; }
+    .faq-svar { font-size: 0.88rem; color: var(--muted); line-height: 1.7; padding-bottom: 20px; display: none; }
+    .faq-item.aapen .faq-pil { transform: rotate(180deg); }
+    .faq-item.aapen .faq-svar { display: block; }
+
+    /* FOOTER */
+    footer {
+      text-align: center; padding: 32px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.82rem; color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+    footer a:hover { color: var(--lime); }
+
+    @media (max-width: 600px) {
+      nav { padding: 14px 16px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Bytte<span>hjelpern</span></a>
+  <div class="nav-links">
+    <a href="index.html#hvordan">Slik fungerer det</a>
+    <a href="index.html#registrer">Priser</a>
+    <a href="minside.html">Min side</a>
+    <a href="minside.html" class="btn-nav">Kom i gang gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="pro-hero">
+  <div class="pro-badge">⭐ Byttehjelpern Pro</div>
+  <h1>Full kontroll.<br /><em>Automatisk bytte.</em><br />Alltid billigst.</h1>
+  <p>Pro gir deg automatisk avtalebytting, komplett økonomianalyse og skreddersydde sparetips — uten at du trenger å løfte en finger.</p>
+  <div class="pro-pris-wrap">
+    <div class="pro-pris">99 kr <span>/ mnd</span></div>
+    <div class="pro-pris-note">Prøv gratis i 30 dager · Ingen binding · Avslutt når som helst</div>
+  </div>
+  <a href="#signup" class="btn-pro-hero">Start gratis prøveperiode →</a>
+  <div class="pro-garanti">🔒 30 dagers pengene-tilbake-garanti</div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-seksjon">
+  <p class="seksjon-lbl">Hva du får med Pro</p>
+  <h2 class="seksjon-h2">Alt du trenger for å aldri betale for mye igjen</h2>
+  <div class="features-grid">
+    <div class="feature-kort highlight">
+      <div class="feature-ikon">🔄</div>
+      <div class="feature-tittel">Automatisk avtalebytting</div>
+      <div class="feature-tekst">Vi bytter strøm, mobil og bredbånd for deg — du godkjenner med ett svar. Aldri bytte uten din godkjenning.</div>
+    </div>
+    <div class="feature-kort highlight">
+      <div class="feature-ikon">📲</div>
+      <div class="feature-tittel">E-post og SMS-varsling</div>
+      <div class="feature-tekst">Får varsel med en gang vi finner et billigere alternativ. Svar OK i e-posten — så tar vi resten.</div>
+    </div>
+    <div class="feature-kort">
+      <div class="feature-ikon">📊</div>
+      <div class="feature-tittel">Full økonomianalyse</div>
+      <div class="feature-tekst">Grafer over alle utgifter, inntekt og hva du sitter igjen med. Se nøyaktig hvor pengene dine går.</div>
+    </div>
+    <div class="feature-kort">
+      <div class="feature-ikon">🏦</div>
+      <div class="feature-tittel">Lån og husleie-oversikt</div>
+      <div class="feature-tekst">Legg inn boliglån, billån og husleie. Se total månedlig belastning og sammenlign med inntekten din.</div>
+    </div>
+    <div class="feature-kort">
+      <div class="feature-ikon">📅</div>
+      <div class="feature-tittel">Trekkdatokalender</div>
+      <div class="feature-tekst">Se nøyaktig hvilke dager penger trekkes fra kontoen din — Netflix dag 15, Spotify dag 1, strøm dag 20.</div>
+    </div>
+    <div class="feature-kort">
+      <div class="feature-ikon">💡</div>
+      <div class="feature-tittel">Skreddersydde sparetips</div>
+      <div class="feature-tekst">Vi analyserer alle dine avtaler og finner kombinasjoner du kan spare på — f.eks. ICE Max som inkluderer Netflix.</div>
+    </div>
+    <div class="feature-kort">
+      <div class="feature-ikon">⚡</div>
+      <div class="feature-tittel">Sesongbasert bytterådgivning</div>
+      <div class="feature-tekst">Vi forteller deg akkurat når det er smart å bytte strømleverandør basert på sesong og markedsdata.</div>
+    </div>
+    <div class="feature-kort">
+      <div class="feature-ikon">🎯</div>
+      <div class="feature-tittel">Prioritert support</div>
+      <div class="feature-tekst">Pro-kunder får rask respons. Vi hjelper deg med alt fra avtaletolkning til å forstå fakturaene dine.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SAMMENLIGNING -->
+<div class="sammenlign-seksjon">
+  <div class="sammenlign-wrap">
+    <p class="seksjon-lbl" style="text-align:center">Gratis vs Pro</p>
+    <h2 class="seksjon-h2">Hva er forskjellen?</h2>
+    <table class="sammenlign-tabell">
+      <thead>
+        <tr>
+          <th style="text-align:left">Funksjon</th>
+          <th>Gratis</th>
+          <th>Pro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Strøm, mobil, bredbånd og forsikring</td><td><span class="check-gratis">✓</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Live strømpris for ditt område</td><td><span class="check-gratis">✓</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Billigste alternativer med Bytt nå-knapp</td><td><span class="check-gratis">✓</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Abonnementsoversikt</td><td><span class="check-gratis">✓</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Månedlig kostnadsfordeling</td><td><span class="check-gratis">✓</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Automatisk avtalebytting</td><td><span class="dash-grey">–</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>E-post og SMS-varsling</td><td><span class="dash-grey">–</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Økonomianalyse med grafer</td><td><span class="dash-grey">–</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Lån og husleie-oversikt</td><td><span class="dash-grey">–</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Trekkdatokalender</td><td><span class="dash-grey">–</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Skreddersydde sparetips</td><td><span class="dash-grey">–</span></td><td><span class="check-pro">✓</span></td></tr>
+        <tr><td>Prioritert support</td><td><span class="dash-grey">–</span></td><td><span class="check-pro">✓</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- KALKULATOR -->
+<div class="kalkulator-seksjon">
+  <p class="seksjon-lbl">Regnestykket</p>
+  <h2 class="seksjon-h2">Er Pro verdt det?</h2>
+  <div class="kalkulator-kort">
+    <div class="kalk-row"><span class="kalk-lbl">Snitt spart ved strømbytting/år</span><span class="kalk-val">3 100 kr</span></div>
+    <div class="kalk-row"><span class="kalk-lbl">Snitt spart ved mobilbytting/år</span><span class="kalk-val">2 400 kr</span></div>
+    <div class="kalk-row"><span class="kalk-lbl">Snitt spart på abonnementer/år</span><span class="kalk-val">1 800 kr</span></div>
+    <div class="kalk-row"><span class="kalk-lbl">Snitt spart på forsikring/år</span><span class="kalk-val">1 400 kr</span></div>
+    <div class="kalk-row" style="border-bottom:none"><span class="kalk-lbl">Pris Pro (12 måneder)</span><span class="kalk-val" style="color:#f87171">– 1 188 kr</span></div>
+    <div class="kalk-total">
+      <span class="kalk-total-lbl">💚 Netto gevinst per år</span>
+      <span class="kalk-total-val">7 512 kr</span>
+    </div>
+    <div class="kalk-note">Basert på gjennomsnittsbruker. Din besparelse varierer.</div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div class="signup-seksjon" id="signup">
+  <p class="seksjon-lbl">Kom i gang</p>
+  <h2 class="seksjon-h2">Start din gratis prøveperiode i dag</h2>
+  <div class="signup-kort">
+    <div id="signupForm">
+      <div class="form-group">
+        <label>E-postadresse</label>
+        <input type="email" id="proEpost" placeholder="din@epost.no" />
+      </div>
+      <div class="form-group">
+        <label>Passord</label>
+        <input type="password" id="proPassord" placeholder="Minst 8 tegn" />
+      </div>
+      <button class="btn-signup-stor" onclick="registrerPro()">Start 30 dager gratis →</button>
+      <p class="signup-vilkaar">
+        Ved å registrere deg godtar du våre <a href="vilkar.html">vilkår</a> og 
+        <a href="personvern.html">personvernregler</a>. 
+        Prøveperioden er gratis. Vi varsler deg 7 dager før betaling starter.
+      </p>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+        <span style="font-size:0.82rem;color:var(--muted)">Har du allerede konto? </span>
+        <a href="minside.html" style="font-size:0.82rem;color:var(--lime)">Logg inn →</a>
+      </div>
+    </div>
+    <div class="success-wrap" id="signupSuccess">
+      <div style="font-size:2.5rem;margin-bottom:12px">🎉</div>
+      <h3>Velkommen til Pro!</h3>
+      <p id="successDetail">Sjekk innboksen din — vi har sendt deg en bekreftelseslenke.</p>
+      <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 16px;margin-top:16px;font-size:0.82rem;color:#fbbf24;text-align:left">
+        📧 Har du ikke fått e-post? Sjekk søppelpost eller vent noen minutter.
+        Om du allerede har konto kan du gå direkte til Min side.
+      </div>
+      <a href="minside.html" style="display:inline-block;margin-top:20px;color:var(--lime);font-size:0.9rem;font-weight:600;">Gå til Min side →</a>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-seksjon">
+  <p class="seksjon-lbl" style="text-align:center">Spørsmål og svar</p>
+  <h2 class="seksjon-h2">Vanlige spørsmål om Pro</h2>
+  <div style="margin-top:32px">
+    <div class="faq-item">
+      <div class="faq-sporsmal" onclick="toggleFaq(this)">
+        Hva skjer etter 30 dager?
+        <span class="faq-pil">▼</span>
+      </div>
+      <div class="faq-svar">Etter 30 dager fortsetter abonnementet til 99 kr/mnd. Vi sender deg en påminnelse 7 dager før prøveperioden avsluttes. Du kan avslutte når som helst i innstillingene.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-sporsmal" onclick="toggleFaq(this)">
+        Bytter dere avtaler uten at jeg godkjenner?
+        <span class="faq-pil">▼</span>
+      </div>
+      <div class="faq-svar">Aldri. Vi sender deg alltid en anbefaling med full informasjon om ny og gammel avtale. Du sier ja eller nei — vi gjør ingenting uten din eksplisitte godkjenning.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-sporsmal" onclick="toggleFaq(this)">
+        Hva om jeg ikke er kredittverdige hos ny leverandør?
+        <span class="faq-pil">▼</span>
+      </div>
+      <div class="faq-svar">Byttehjelpern er ikke ansvarlig dersom avtalebytter ikke kan gjennomføres som følge av manglende kredittverdighet eller betalingsanmerkninger hos leverandør. Vi anbefaler å sjekke din kredittscore på Experian.no før du godkjenner et bytte.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-sporsmal" onclick="toggleFaq(this)">
+        Hvilke avtaler kan dere bytte?
+        <span class="faq-pil">▼</span>
+      </div>
+      <div class="faq-svar">Vi jobber aktivt med strømleverandører, mobiloperatører og bredbåndsleverandører. Strøm er fullt operativt. Mobil og bredbånd er under utrulling. Du vil få varsel når din operatør støttes.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-sporsmal" onclick="toggleFaq(this)">
+        Er informasjonen min trygg?
+        <span class="faq-pil">▼</span>
+      </div>
+      <div class="faq-svar">Ja. Fødselsnummer og sensitiv informasjon lagres kryptert. Vi deler aldri data med tredjeparter uten din samtykke. Se vår personvernerklæring for fullstendig informasjon.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-sporsmal" onclick="toggleFaq(this)">
+        Kan jeg gå tilbake til gratis?
+        <span class="faq-pil">▼</span>
+      </div>
+      <div class="faq-svar">Ja, du kan nedgradere til gratisplanen når som helst. Du beholder alle dataene dine og tilgang til grunnleggende funksjoner.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Byttehjelpern</p>
+  <div style="margin-top:10px">
+    <a href="index.html">Forsiden</a>
+    <a href="om-oss.html">Om oss</a>
+    <a href="personvern.html">Personvern</a>
+    <a href="vilkar.html">Vilkår</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const { createClient } = supabase;
+  const db = createClient(
+    'https://infvmrapalancgwhuvhh.supabase.co',
+    'sb_publishable_aCpIUWseYZBrXZZdkvsGkQ_3nuGk4ws'
+  );
+
+  function toggleFaq(el) {
+    el.parentElement.classList.toggle('aapen');
+  }
+
+  async function registrerPro() {
+    const epost   = document.getElementById('proEpost').value.trim();
+    const passord = document.getElementById('proPassord').value;
+    if (!epost || !passord) { alert('Fyll inn e-post og passord.'); return; }
+    if (passord.length < 8) { alert('Passordet må være minst 8 tegn.'); return; }
+
+    const btn = event.target;
+    btn.textContent = 'Registrerer...';
+    btn.disabled = true;
+
+    // Prøv å oppdatere eksisterende bruker først (allerede registrert)
+    const { data: existing } = await db.auth.getSession();
+    if (existing?.session) {
+      const { error: metaErr } = await db.auth.updateUser({ data: { plan: 'pro_trial' } });
+      if (!metaErr) {
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('signupSuccess').style.display = 'block';
+        document.getElementById('successDetail').textContent = 'Pro er aktivert på kontoen din! Gå til Min side.';
+        return;
+      }
+    }
+
+    // Ny bruker — registrer
+    const { data, error } = await db.auth.signUp({ email: epost, password: passord,
+      options: {
+        data: { plan: 'pro_trial' },
+        emailRedirectTo: window.location.origin + '/minside.html'
+      }
+    });
+
+    btn.textContent = 'Start 30 dager gratis →';
+    btn.disabled = false;
+
+    if (error) { alert('Registrering feilet: ' + error.message); return; }
+
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('signupSuccess').style.display = 'block';
+
+    // Sjekk om e-post trenger bekreftelse
+    const needsConfirm = data.user && !data.session;
+    document.getElementById('successDetail').textContent = needsConfirm
+      ? 'Sjekk innboksen din — vi har sendt deg en bekreftelseslenke. Klikk på den for å aktivere Pro.'
+      : 'Pro er aktivert! Du kan nå logge inn på Min side.';
+  }
+</script>
+</body>
+</html>
