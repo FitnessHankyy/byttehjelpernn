@@ -21,14 +21,14 @@ async function fetchToken() {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`Auth failed (${response.status}): ${errorBody}`);
+    throw new Error("Auth failed (" + response.status + "): " + errorBody);
   }
 
   const data = await response.json();
   const token = data.token || data.access_token || data.accessToken;
 
   if (!token) {
-    throw new Error(`No token found. Response was: ${JSON.stringify(data)}`);
+    throw new Error("No token found. Response was: " + JSON.stringify(data));
   }
 
   return token;
@@ -38,20 +38,49 @@ async function fetchBanks(token) {
   const response = await fetch(BANKS_URL, {
     method: "GET",
     headers: {
-      "Authorization": `Bearer ${token}`,
+      "Authorization": "Bearer " + token,
       "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`Banks fetch failed (${response.status}): ${errorBody}`);
+    throw new Error("Banks fetch failed (" + response.status + "): " + errorBody);
   }
 
   return await response.json();
 }
 
 exports.handler = async function(event) {
-  const headers = {
+  var headers = {
     "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET",
+  };
+
+  if (event.httpMethod !== "GET") {
+    return {
+      statusCode: 405,
+      headers: headers,
+      body: JSON.stringify({ error: "Method Not Allowed" }),
+    };
+  }
+
+  try {
+    var token = await fetchToken();
+    var banks = await fetchBanks(token);
+
+    return {
+      statusCode: 200,
+      headers: headers,
+      body: JSON.stringify({ success: true, banks: banks }),
+    };
+  } catch (error) {
+    console.error("Error:", error.message);
+    return {
+      statusCode: 500,
+      headers: headers,
+      body: JSON.stringify({ success: false, error: error.message }),
+    };
+  }
 };
