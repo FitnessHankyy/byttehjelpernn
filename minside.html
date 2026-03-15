@@ -1,8 +1,96 @@
-Byttehjelper – Sammenlign boliglån
-
-Byttehjelper
-Sammenlign boliglån 
-Boliglån fra norske banker
-
-
-Henter boliglånsdata...
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byttehjelper – Sammenlign boliglån</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f4f6f9; color: #1a1a2e; min-height: 100vh; }
+    header { background: #1a1a2e; color: white; padding: 20px 32px; }
+    header h1 { font-size: 1.4rem; font-weight: 700; }
+    header span { font-size: 0.9rem; color: #aab4c8; }
+    .container { max-width: 900px; margin: 32px auto; padding: 0 16px; }
+    .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .top-bar h2 { font-size: 1.2rem; font-weight: 600; }
+    .count-label { font-size: 0.85rem; color: #6b7a99; margin-top: 4px; }
+    .top-bar input { padding: 8px 14px; border: 1px solid #d0d7e3; border-radius: 8px; font-size: 0.9rem; width: 220px; outline: none; }
+    .top-bar input:focus { border-color: #4f7ef8; }
+    #status { text-align: center; padding: 48px; color: #6b7a99; }
+    .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #d0d7e3; border-top-color: #4f7ef8; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #mortgage-list { display: flex; flex-direction: column; gap: 12px; }
+    .mortgage-card { background: white; border-radius: 12px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.07); transition: box-shadow 0.2s; flex-wrap: wrap; gap: 12px; }
+    .mortgage-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .bank-name { font-size: 1rem; font-weight: 600; color: #1a1a2e; }
+    .product-name { font-size: 0.85rem; color: #6b7a99; margin-top: 4px; }
+    .rate-block { text-align: right; }
+    .effective-rate { font-size: 1.5rem; font-weight: 700; color: #4f7ef8; }
+    .rate-label { font-size: 0.75rem; color: #6b7a99; margin-top: 2px; }
+    .nominal-rate { font-size: 0.8rem; color: #aab4c8; margin-top: 4px; }
+    .error-box { background: #fff0f0; border: 1px solid #f5c0c0; border-radius: 10px; padding: 20px; color: #c0392b; text-align: center; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Byttehjelper</h1>
+  <span>Sammenlign boliglån</span>
+</header>
+<div class="container">
+  <div class="top-bar">
+    <div>
+      <h2>Boliglån fra norske banker</h2>
+      <div class="count-label" id="count-label"></div>
+    </div>
+    <input type="text" id="search" placeholder="Søk etter bank..." oninput="filterList()" />
+  </div>
+  <div id="status">
+    <div class="spinner"></div>
+    <div>Henter boliglånsdata...</div>
+  </div>
+  <div id="mortgage-list"></div>
+</div>
+<script>
+  var allMortgages = [];
+  function getRate(m) { return m.effectiveInterestRate || m.effectiveRate || m.annualPercentageRate || m.apr || null; }
+  function getNominalRate(m) { return m.nominalInterestRate || m.nominalRate || m.interestRate || null; }
+  function getBankName(m) { return (m.bankCompany && m.bankCompany.name) || m.bankName || m.bank || "Ukjent bank"; }
+  function getProductName(m) { return m.name || m.productName || ""; }
+  function escapeHtml(str) { return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function sortByRate(items) { return items.slice().sort(function(a, b) { var rA = parseFloat(getRate(a)) || 999; var rB = parseFloat(getRate(b)) || 999; return rA - rB; }); }
+  function renderList(items) {
+    var list = document.getElementById("mortgage-list");
+    var countLabel = document.getElementById("count-label");
+    if (items.length === 0) { list.innerHTML = "<div class='error-box'>Ingen resultater.</div>"; countLabel.textContent = ""; return; }
+    countLabel.textContent = items.length + " produkter funnet";
+    list.innerHTML = items.map(function(m) {
+      var effectiveRate = getRate(m);
+      var nominalRate = getNominalRate(m);
+      var effectiveDisplay = effectiveRate !== null ? parseFloat(effectiveRate).toFixed(2) + " %" : "—";
+      var nominalDisplay = nominalRate !== null ? "Nominell: " + parseFloat(nominalRate).toFixed(2) + " %" : "";
+      return "<div class='mortgage-card'><div><div class='bank-name'>" + escapeHtml(getBankName(m)) + "</div>" + (getProductName(m) ? "<div class='product-name'>" + escapeHtml(getProductName(m)) + "</div>" : "") + "</div><div class='rate-block'><div class='effective-rate'>" + effectiveDisplay + "</div><div class='rate-label'>Effektiv rente</div>" + (nominalDisplay ? "<div class='nominal-rate'>" + escapeHtml(nominalDisplay) + "</div>" : "") + "</div></div>";
+    }).join("");
+  }
+  function filterList() {
+    var query = document.getElementById("search").value.toLowerCase();
+    var filtered = allMortgages.filter(function(m) { return getBankName(m).toLowerCase().indexOf(query) !== -1 || getProductName(m).toLowerCase().indexOf(query) !== -1; });
+    renderList(filtered);
+  }
+  async function loadMortgages() {
+    try {
+      var response = await fetch("/.netlify/functions/forbrukerradet-auth");
+      var data = await response.json();
+      document.getElementById("status").style.display = "none";
+      if (!data.success || !data.mortgages) { document.getElementById("mortgage-list").innerHTML = "<div class='error-box'>Kunne ikke hente data: " + (data.error || "Ukjent feil") + "</div>"; return; }
+      var items = Array.isArray(data.mortgages) ? data.mortgages : [];
+      allMortgages = sortByRate(items);
+      renderList(allMortgages);
+    } catch (err) {
+      document.getElementById("status").style.display = "none";
+      document.getElementById("mortgage-list").innerHTML = "<div class='error-box'>Nettverksfeil: " + err.message + "</div>";
+    }
+  }
+  loadMortgages();
+</script>
+</body>
+</html>
