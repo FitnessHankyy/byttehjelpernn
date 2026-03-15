@@ -1,41 +1,64 @@
 const AUTH_URL = "https://finans-api.forbrukerradet.no/auth/token";
-const BANKS_URL = "https://finans-api.forbrukerradet.no/feed/banks";
+const MORTGAGES_URL = "https://finans-api.forbrukerradet.no/feed/mortgages/all";
+
+// --- Token cache ---
+var cachedToken = null;
+var tokenExpiresAt = null;
+
+// --- Mortgage data cache (5 minutes) ---
+var cachedMortgages = null;
+var mortgagesCachedAt = null;
+var MORTGAGES_CACHE_TTL = 5 * 60 * 1000;
 
 async function fetchToken() {
-  const clientId = process.env.FORBRUKERRADET_CLIENT_ID;
-  const clientSecret = process.env.FORBRUKERRADET_CLIENT_SECRET;
+  var clientId = process.env.FORBRUKERRADET_CLIENT_ID;
+  var clientSecret = process.env.FORBRUKERRADET_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
     throw new Error("Missing API credentials in environment variables");
   }
 
-  const response = await fetch(AUTH_URL, {
+  var response = await fetch(AUTH_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       grantType: "external_consumer",
-      clientId,
-      clientSecret,
+      clientId: clientId,
+      clientSecret: clientSecret,
     }),
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
+    var errorBody = await response.text();
     throw new Error("Auth failed (" + response.status + "): " + errorBody);
   }
 
-  const data = await response.json();
-  const token = data.token || data.access_token || data.accessToken;
+  var data = await response.json();
+  var token = data.token || data.access_token || data.accessToken;
 
   if (!token) {
     throw new Error("No token found. Response was: " + JSON.stringify(data));
   }
 
+  cachedToken = token;
+  tokenExpiresAt = Date.now() + 55 * 60 * 1000;
+
   return token;
 }
 
-async function fetchBanks(token) {
-  const response = await fetch(BANKS_URL, {
+async function getValidToken() {
+  if (cachedToken && tokenExpiresAt && Date.now() < tokenExpiresAt) {
+    return cachedToken;
+  }
+  return await fetchToken();
+}
+
+async function fetchMortgages(token) {
+  if (cachedMortgages && mortgagesCachedAt && (Date.now() - mortgagesCachedAt) < MORTGAGES_CACHE_TTL) {
+    return cachedMortgages;
+  }
+
+  var response = await fetch(MORTGAGES_URL, {
     method: "GET",
     headers: {
       "Authorization": "Bearer " + token,
@@ -44,11 +67,16 @@ async function fetchBanks(token) {
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error("Banks fetch failed (" + response.status + "): " + errorBody);
+    var errorBody = await response.text();
+    throw new Error("Mortgages fetch failed (" + response.status + "): " + errorBody);
   }
 
-  return await response.json();
+  var data = await response.json();
+
+  cachedMortgages = data;
+  mortgagesCachedAt = Date.now();
+
+  return data;
 }
 
 exports.handler = async function(event) {
@@ -67,13 +95,13 @@ exports.handler = async function(event) {
   }
 
   try {
-    var token = await fetchToken();
-    var banks = await fetchBanks(token);
+    var token = await getValidToken();
+    var mortgages = await fetchMortgages(token);
 
     return {
       statusCode: 200,
       headers: headers,
-      body: JSON.stringify({ success: true, banks: banks }),
+      body: JSON.stringify({ success: true, mortgages: mortgages }),
     };
   } catch (error) {
     console.error("Error:", error.message);
