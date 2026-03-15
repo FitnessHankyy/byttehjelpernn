@@ -1,3 +1,5 @@
+Gammel min side som er OK uten API. 
+
 <!DOCTYPE html>
 <html lang="no">
 <head>
@@ -210,6 +212,8 @@
       border: 1px solid rgba(182,240,96,0.3);
       color: var(--lime); font-size: 0.9rem; font-weight: 500;
     }
+
+
 
     /* Profil */
     .profil-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
@@ -747,10 +751,12 @@
   </div>
 </nav>
 
+<!-- ── INNLOGGING ── -->
 <div class="view active" id="viewAuth">
   <div class="auth-wrap">
     <div class="auth-box">
 
+      <!-- LOGG INN -->
       <div id="loginForm">
         <h1>Logg inn</h1>
         <p>Velkommen tilbake! Logg inn for å administrere avtalene dine.</p>
@@ -769,6 +775,7 @@
         </div>
       </div>
 
+      <!-- REGISTRER DEG -->
       <div id="registerForm" style="display:none">
         <h1>Opprett konto</h1>
         <p>Gratis for alltid. Ingen kredittkort nødvendig.</p>
@@ -787,6 +794,7 @@
         </div>
       </div>
 
+      <!-- BEKREFT EPOST -->
       <div id="confirmForm" style="display:none">
         <h1>Sjekk e-posten din 📬</h1>
         <div class="confirm-note">
@@ -803,9 +811,11 @@
   </div>
 </div>
 
+<!-- ── MIN SIDE / DASHBOARD ── -->
 <div class="view" id="viewDash">
   <div class="dash-layout">
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-label">Oversikt</div>
       <button class="sidebar-link aktiv" onclick="byttSeksjon('oversikt',this)">🏠 Dashboard</button>
@@ -852,8 +862,10 @@
       <button class="sidebar-link" onclick="byttSeksjon('profil',this)">👤 Min profil</button>
     </aside>
 
+    <!-- HOVED-INNHOLD -->
     <div class="dash-main">
 
+      <!-- ── OVERSIKT ── -->
       <div class="dash-seksjon aktiv" id="seksjonOversikt">
         <div class="velkomst">
           <h1>Hei, <em id="velkomstNavn">der</em>! 👋</h1>
@@ -870,8 +882,10 @@
           </div>
         </div>
 
+        <!-- MÅNEDLIG KOSTNAD: TO BOKSER + TOTAL -->
         <div id="mndKostnadWrap" style="display:none">
 
+          <!-- TOTAL STRIP -->
           <div class="mnd-total-strip">
             <div>
               <div class="mnd-kostnad-lbl">Total månedlig kostnad</div>
@@ -880,8 +894,10 @@
             <div class="mnd-total-ar" id="mndTotaltAar"></div>
           </div>
 
+          <!-- TO BOKSER SIDE OM SIDE -->
           <div class="mnd-to-bokser">
 
+            <!-- BOKS 1: FASTE NØDVENDIGE -->
             <div class="mnd-boks mnd-boks-nodvendig">
               <div class="mnd-boks-header">
                 <span class="mnd-boks-ikon">🏠</span>
@@ -896,6 +912,7 @@
               <div class="mnd-kostnad-linje"><span class="linje-lbl">🛡️ Forsikring</span><span class="linje-val" id="mndForsikring"><span class="mangler">Ikke registrert</span></span></div>
             </div>
 
+            <!-- BOKS 2: FRITID OG UNDERHOLDNING -->
             <div class="mnd-boks mnd-boks-fritid">
               <div class="mnd-boks-header">
                 <span class="mnd-boks-ikon">🎬</span>
@@ -913,6 +930,7 @@
 
           </div>
 
+          <!-- SPARETIPS -->
           <div class="sparetips-seksjon" id="sparetipsSeksjon" style="display:none">
             <div class="sparetips-tittel">💡 Slik kan du spare mer</div>
             <div id="sparetipsListe"></div>
@@ -921,6 +939,7 @@
 
         </div>
 
+        <!-- SPART OVERSIKT -->
         <div id="spartOversikt" style="display:none;margin-bottom:20px">
           <div style="background:#0e2018;border:1px solid rgba(182,240,96,0.25);border-radius:18px;padding:28px;margin-bottom:4px">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px">
@@ -936,6 +955,7 @@
           </div>
         </div>
 
+        <!-- GRAFER -->
         <div id="graferWrap" style="display:none;margin-bottom:28px">
           <div class="graf-grid">
             <div class="graf-kort">
@@ -1003,7 +1023,9 @@
         </div>
       </div>
 
+      <!-- ── STRØM ── -->
       <div class="dash-seksjon" id="seksjonStrom">
+        <!-- MIN STRØMAVTALE KORT -->
         <div id="stromAvtaleKort" style="display:none"></div>
 
         <div class="form-section">
@@ -1057,7 +1079,12 @@
           <button class="btn-block" style="max-width:240px;margin-top:24px;" onclick="saveStrom()">Lagre alle målere</button>
           <div class="save-msg" id="stromSaveMsg">✅ Lagret! Vi begynner å overvåke markedet for deg.</div>
         </div>
-      </div><div class="dash-seksjon" id="seksjonMobil">
+      </div><!-- /seksjonStrom -->
+
+
+      <!-- ── MOBIL ── -->
+      <div class="dash-seksjon" id="seksjonMobil">
+        <!-- MIN MOBILAVTALE KORT -->
         <div id="mobilAvtaleKort" style="display:none"></div>
 
         <div class="form-section">
@@ -1096,7 +1123,10 @@
           <div class="save-msg" id="mobilSaveMsg">✅ Lagret!</div>
           <div class="snart-badge">🔜 Automatisk bytte kommer snart</div>
         </div>
-      </div><div class="dash-seksjon" id="seksjonForsikring">
+      </div><!-- /seksjonMobil -->
+
+      <!-- ── FORSIKRING ── -->
+      <div class="dash-seksjon" id="seksjonForsikring">
         <div class="form-section">
           <h2>🛡️ Forsikring</h2>
           <p class="section-desc">Hold oversikt over forsikringene dine. Vi minner deg på å sjekke markedet jevnlig — forsikringspriser kan variere mye mellom selskaper.</p>
@@ -1113,7 +1143,7 @@
             <div class="form-group">
               <label>Totalt månedspris (kr)</label>
               <input type="number" id="forsikringPris" placeholder="f.eks. 850" min="0" />
-              <p class="felt-hint">Sum av all forsikringer per måned.</p>
+              <p class="felt-hint">Sum av alle forsikringer per måned.</p>
             </div>
             <div class="form-group">
               <label>Sist du sjekket markedet</label>
@@ -1135,7 +1165,11 @@
           <div class="save-msg" id="forsikringSaveMsg">✅ Lagret!</div>
           <div class="snart-badge">🔜 Sammenligningsverktøy kommer snart</div>
         </div>
-      </div><div class="dash-seksjon" id="seksjonBredband">
+      </div><!-- /seksjonForsikring -->
+
+      <!-- ── BREDBÅND ── -->
+      <div class="dash-seksjon" id="seksjonBredband">
+        <!-- MIN BREDBÅNDSAVTALE KORT -->
         <div id="bredbandAvtaleKort" style="display:none"></div>
 
         <div class="form-section">
@@ -1167,11 +1201,15 @@
           <div class="save-msg" id="bredbandSaveMsg">✅ Lagret!</div>
           <div class="snart-badge">🔜 Automatisk bytte kommer snart</div>
         </div>
-      </div><div class="dash-seksjon" id="seksjonOkonomi">
+      </div><!-- /seksjonBredband -->
+
+      <!-- ── ØKONOMI ── -->
+      <div class="dash-seksjon" id="seksjonOkonomi">
         <div class="form-section">
           <h2>💸 Økonomisoversikt</h2>
           <p class="section-desc">Få full oversikt over inntekter, utgifter og hva du sitter igjen med hver måned.</p>
 
+          <!-- INNTEKT/UTGIFT SAMMENDRAG -->
           <div class="okonomi-sammendrag" id="okonomSammendrag">
             <div class="okonomi-rad inntekt">
               <span class="okonomi-lbl">💰 Månedlig netto inntekt</span>
@@ -1195,11 +1233,13 @@
             </div>
           </div>
 
+          <!-- TREKKDATO KALENDER -->
           <div class="profil-seksjon-tittel" style="margin-top:28px">📅 Trekkdatoer denne måneden</div>
           <p class="section-desc" style="margin-bottom:16px">Legg inn trekkdato på abonnementer så du vet når penger går ut.</p>
           <div id="trekkKalender" class="trekk-kalender"></div>
           <div id="trekkListe" style="margin-top:16px"></div>
 
+          <!-- BOLIGLÅN LIVE -->
           <div style="background:#0d1f15;border:1px solid rgba(251,191,36,0.15);border-radius:16px;padding:22px 24px;margin-top:24px">
             <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06)">
               <div style="display:flex;align-items:center;gap:14px">
@@ -1211,11 +1251,6 @@
               </div>
               <button onclick="lastLaanFraFinansportalen()" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);color:#fbbf24;padding:6px 14px;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer">↻ Oppdater</button>
             </div>
-            
-            <div style="margin-bottom: 16px;">
-              <input type="text" id="laanSok" placeholder="Søk etter bank (f.eks. Møre)..." oninput="filtrerLaan()" style="width:100%; max-width:300px; padding:10px 14px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.9rem; outline:none;" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
-            </div>
-
             <div id="laanGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
               <div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1">
                 <div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live lånerenter fra Finansportalen...
@@ -1223,7 +1258,10 @@
             </div>
           </div>
         </div>
-      </div><div class="dash-seksjon" id="seksjonAbonnement">
+      </div><!-- /seksjonOkonomi -->
+
+      <!-- ── ABONNEMENTER ── -->
+      <div class="dash-seksjon" id="seksjonAbonnement">
         <div class="form-section">
           <h2>🎬 Andre abonnementer</h2>
           <p class="section-desc">Legg til strømming, musikk, aviser og andre faste abonnement for å få en komplett oversikt over månedlige utgifter.</p>
@@ -1263,11 +1301,15 @@
           <button class="btn-block" style="max-width:240px;margin-top:20px;" onclick="saveAbonnement()">Lagre abonnementer</button>
           <div class="save-msg" id="abonnementSaveMsg">✅ Lagret!</div>
         </div>
-      </div><div class="dash-seksjon" id="seksjonSparerad">
+      </div><!-- /seksjonAbonnement -->
+
+      <!-- ── SPARERÅDGIVER ── -->
+      <div class="dash-seksjon" id="seksjonSparerad">
         <div class="form-section">
           <h2>🧠 Sparerådgiver</h2>
           <p class="section-desc">Personlig tilpassede råd basert på din økonomi, pluss tidløse tips fra eksperter.</p>
 
+          <!-- DIN SITUASJON -->
           <div id="spareradPersonlig" style="display:none">
             <div style="background:#0d1f15;border:1px solid rgba(182,240,96,0.2);border-radius:16px;padding:22px 24px;margin-bottom:16px">
               <div style="display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06)">
@@ -1278,6 +1320,7 @@
             </div>
           </div>
 
+          <!-- RESTPENGE TIPS -->
           <div style="margin-bottom:16px">
             <div style="background:#0d1f15;border:1px solid rgba(251,191,36,0.15);border-radius:16px;padding:22px 24px">
               <div style="display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06)">
@@ -1290,6 +1333,7 @@
             </div>
           </div>
 
+          <!-- SPAREREGLER -->
           <div style="background:#0d1f15;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;margin-bottom:16px">
             <div style="display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06)">
               <div style="width:42px;height:42px;border-radius:12px;background:rgba(182,240,96,0.12);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">📐</div>
@@ -1346,6 +1390,7 @@
             </div>
           </div>
 
+          <!-- HØYRENTEKONTOER — Finansportalen live data -->
           <div style="background:#0d1f15;border:1px solid rgba(96,165,250,0.15);border-radius:16px;padding:22px 24px;margin-bottom:16px">
             <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06)">
               <div style="display:flex;align-items:center;gap:14px">
@@ -1364,6 +1409,7 @@
             </div>
           </div>
 
+          <!-- EXCEL BUDSJETT -->
           <div style="background:#0d1f15;border:1px solid rgba(139,92,246,0.15);border-radius:16px;padding:22px 24px;margin-bottom:16px">
             <div style="display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06)">
               <div style="width:42px;height:42px;border-radius:12px;background:rgba(139,92,246,0.12);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">📊</div>
@@ -1376,17 +1422,23 @@
           </div>
 
         </div>
-      </div><div class="dash-seksjon" id="seksjonPrishistorikk">
+      </div><!-- /seksjonSparerad -->
+
+      <!-- ── PRISHISTORIKK ── -->
+      <div class="dash-seksjon" id="seksjonPrishistorikk">
         <div class="form-section">
           <h2>📈 Prishistorikk & kampanjer</h2>
           <p class="section-desc">Følg med på prisutvikling og aktive kampanjer fra norske leverandører.</p>
 
+          <!-- STRØM -->
           <div class="profil-seksjon-tittel" style="margin-top:8px">⚡ Strømleverandører</div>
           <div class="pris-leverandor-grid" id="prisStromGrid"></div>
 
+          <!-- MOBIL -->
           <div class="profil-seksjon-tittel" style="margin-top:28px">📱 Mobiloperatører</div>
           <div class="pris-leverandor-grid" id="prisMobilGrid"></div>
 
+          <!-- BREDBÅND -->
           <div class="profil-seksjon-tittel" style="margin-top:28px">📡 Bredbånd</div>
           <div class="pris-leverandor-grid" id="prisBredbandGrid"></div>
 
@@ -1394,7 +1446,13 @@
             ℹ️ Prishistorikk registreres fra du registrerer deg. Kampanjer og anbefalinger oppdateres manuelt av Byttehjelpern-teamet.
           </p>
         </div>
-      </div><div class="dash-seksjon" id="seksjonProfil">
+      </div><!-- /seksjonPrishistorikk -->
+
+
+
+
+      <!-- ── PROFIL ── -->
+      <div class="dash-seksjon" id="seksjonProfil">
       <div class="form-section" id="profilSeksjon">
           <div class="profil-header">
             <h2>👤 Min profil</h2>
@@ -1402,6 +1460,7 @@
           </div>
           <p class="section-desc">Denne informasjonen brukes når vi bytter avtaler på dine vegne. Alle felt er obligatoriske.</p>
 
+      <!-- VISNING (når profil er fylt inn) -->
       <div id="profilVisning" style="display:none">
         <div class="profil-visning">
           <div class="profil-felt"><div class="felt-lbl">Navn</div><div class="felt-val" id="visNavn">—</div></div>
@@ -1415,6 +1474,7 @@
         </div>
       </div>
 
+      <!-- SKJEMA (redigering) -->
       <div id="profilSkjema">
         <div class="profil-seksjon-tittel">👤 Personalia</div>
         <div class="form-row">
@@ -1507,7 +1567,15 @@
         </button>
         <div class="save-msg" id="profilSaveMsg">✅ Profil lagret!</div>
       </div>
-      </div></div></div></div></div><template id="maalerTemplate">
+      </div><!-- /profilSeksjon -->
+      </div><!-- /seksjonProfil -->
+
+    </div><!-- /dash-main -->
+  </div><!-- /dash-layout -->
+</div><!-- /viewDash -->
+
+<!-- MÅLER TEMPLATE (skjult) -->
+<template id="maalerTemplate">
   <div class="maaler-kort">
     <div class="maaler-header">
       <div class="maaler-tittel">
@@ -2159,7 +2227,7 @@
   // Strøm-data fra sammenligningslisten (spot-snitt per område)
   const SPOTSNITT = { NO1: 82, NO2: 80, NO3: 65, NO4: 55, NO5: 78 };
   const STROM_ALTERNATIVER = [
-    { navn:"Tibber",      emoji:"⚡", type:"spot", paslag:0, mnd:49,  url:"https://tibber.com/no" },
+    { navn:"Tibber",       emoji:"⚡", type:"spot", paslag:0, mnd:49,  url:"https://tibber.com/no" },
     { navn:"Cheap Energy", emoji:"💚", type:"spot", paslag:0, mnd:39,  url:"https://cheapenergy.no" },
     { navn:"Agva Kraft",   emoji:"🌊", type:"spot", paslag:0, mnd:29,  url:"https://agva.no" },
     { navn:"Klarkraft",    emoji:"☀️", type:"spot", paslag:1, mnd:29,  url:"https://klarkraft.no" },
@@ -2439,7 +2507,7 @@
   function visBredbandAvtaleKort(data) {
     if (!data || !data.leverandor) return;
     const pris = data.pris || 0;
-    costnadBredband = pris;
+    kostnadBredband = pris;
     oppdaterMndKostnad();
 
     const kortHTML = `
@@ -3053,7 +3121,7 @@
     const label = document.getElementById('renteKildeLabel');
     if (!grid) return;
 
-    if (!window.FP_CONFIG || !FP_CONFIG.clientId || FP_CONFIG.clientId.length < 10) {
+    if (!FP_CONFIG.clientId || FP_CONFIG.clientId.length < 10) {
       // Vis hardkodede fallback-data med tydelig merknad
       renderRenteKort(grid, RENTE_FALLBACK, false);
       if (label) label.textContent = 'Oppdatert mars 2026 · Koble til Finansportalen for live-data';
@@ -3115,59 +3183,46 @@
   }
 
   // ── BOLIGLÅN / MORTGAGES ─────────────────────────────────────────
-  let allMortgagesCache = []; // Lagrer lånene så vi kan søke i dem
-
   async function lastLaanFraFinansportalen() {
     const grid  = document.getElementById('laanGrid');
     const label = document.getElementById('laanKildeLabel');
     if (!grid) return;
 
-    grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live lånerenter fra Finansportalen...</div>';
-    
+    if (!FP_CONFIG.clientId || FP_CONFIG.clientId.length < 10) {
+      renderLaanKort(grid, LAAN_FALLBACK, false);
+      if (label) label.textContent = 'Oppdatert mars 2026 · Koble til Finansportalen for live-data';
+      return;
+    }
+
+    grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live lånerenter...</div>';
     try {
-      // Henter data via Netlify-funksjonen vår!
-      const res = await fetch('/.netlify/functions/forbrukerradet-auth');
-      const data = await res.json();
-      
-      if (!data.success) throw new Error(data.error);
+      const lonn  = parseInt(document.getElementById('profLonnMnd')?.value) || 0;
+      const laan  = typeof laanerListe !== 'undefined'
+        ? laanerListe.reduce((s,l) => s + (parseInt(l.sum)||0), 0) : 0;
+      // Bruk filtrert endepunkt med brukerens data
+      const params = laan > 0
+        ? `?loanAmount=${laan}&repaymentPeriod=25&propertyValue=${Math.round(laan*1.2)}`
+        : '';
+      const data = await fpGet('mortgages');
+      const produkter = (data.products || data)
+        .map(p => ({
+          bank:      p.provider?.name || p.bankName || 'Ukjent',
+          rente:     p.effectiveInterestRate || p.nominalInterestRate || 0,
+          navn:      p.name || 'Boliglån',
+          krav:      p.requirements?.membershipRequired ? 'Krever medlemskap' : 'Åpen for alle',
+          nominell:  p.nominalInterestRate || 0,
+        }))
+        .filter(p => p.rente > 0)
+        .sort((a, b) => a.rente - b.rente)
+        .slice(0, 4);
 
-      // Finansportalen pakker dataen inn litt rart av og til
-      const produkter = Array.isArray(data.mortgages) ? data.mortgages : (data.mortgages?.products || []);
-
-      // Rydder opp dataen og fikser "Ukjent bank"
-      allMortgagesCache = produkter.map(p => {
-        const bankNavn = p.provider?.name || p.bankCompany?.name || p.bankName || 'Ukjent Bank';
-        const rente = p.effectiveInterestRate || p.nominalInterestRate || 0;
-
-        return {
-          bank: bankNavn,
-          rente: rente,
-          navn: p.name || 'Boliglån',
-          krav: p.requirements?.membershipRequired ? 'Krever medlemskap' : 'Åpen for alle',
-          nominell: p.nominalInterestRate || 0,
-        };
-      })
-      .filter(p => p.rente > 0)
-      .sort((a, b) => a.rente - b.rente);
-
-      // Viser de 100 billigste
-      renderLaanKort(grid, allMortgagesCache.slice(0, 100), true);
+      renderLaanKort(grid, produkter, true);
       if (label) label.textContent = 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
-      
     } catch (err) {
       console.error('Finansportalen lån feil:', err);
       renderLaanKort(grid, LAAN_FALLBACK, false);
       if (label) label.textContent = 'Kunne ikke hente live data — viser sist kjente';
     }
-  }
-
-  function filtrerLaan() {
-    const query = document.getElementById('laanSok').value.toLowerCase();
-    const filtrert = allMortgagesCache.filter(p => 
-      p.bank.toLowerCase().includes(query) || 
-      p.navn.toLowerCase().includes(query)
-    );
-    renderLaanKort(document.getElementById('laanGrid'), filtrert.slice(0, 100), true);
   }
 
   const LAAN_FALLBACK = [
@@ -3320,4 +3375,212 @@
     XLSX.writeFile(wb,'byttehjelpern-budsjett-'+new Date().getFullYear()+'.xlsx');
   }
 
-  // ════════════════════
+  // ═══════════════════════════════════════════════════════════════
+  // MODUL 4: PRISHISTORIKK
+  // ═══════════════════════════════════════════════════════════════
+  const PRIS_DATA = {
+    strom: [
+      {navn:'Tibber',badge:'billig',anbefalt:true,aktuell:'Spotpris + 39 øre/mnd fast',trend:'↗ Forventet høyere vinter 2026',kampanje:null,historikk:[{mnd:'Nov 2025',snittpris:'88 øre/kWh'},{mnd:'Des 2025',snittpris:'95 øre/kWh'},{mnd:'Jan 2026',snittpris:'102 øre/kWh'},{mnd:'Feb 2026',snittpris:'78 øre/kWh'}]},
+      {navn:'Fjordkraft',badge:'ok',anbefalt:false,aktuell:'Spotpris + 4,90 øre/kWh + 39 kr/mnd',trend:'→ Stabil prising',kampanje:{tekst:'Ny kunde? 0 kr påslag de første 3 månedene',utloper:'31. mars 2026'},historikk:[{mnd:'Nov 2025',snittpris:'91 øre/kWh'},{mnd:'Des 2025',snittpris:'98 øre/kWh'},{mnd:'Jan 2026',snittpris:'106 øre/kWh'},{mnd:'Feb 2026',snittpris:'81 øre/kWh'}]},
+      {navn:'Agva Kraft',badge:'billig',anbefalt:false,aktuell:'Spotpris + 0 øre/kWh + 19 kr/mnd',trend:'↘ Laveste påslag nå',kampanje:{tekst:'Gratis bytte + gratis første mnd',utloper:'30. april 2026'},historikk:[{mnd:'Nov 2025',snittpris:'87 øre/kWh'},{mnd:'Des 2025',snittpris:'93 øre/kWh'},{mnd:'Jan 2026',snittpris:'100 øre/kWh'},{mnd:'Feb 2026',snittpris:'76 øre/kWh'}]},
+      {navn:'Fortum',badge:'ok',anbefalt:false,aktuell:'Spotpris + 3,9 øre/kWh + 49 kr/mnd',trend:'→ Stabil',kampanje:null,historikk:[{mnd:'Nov 2025',snittpris:'90 øre/kWh'},{mnd:'Des 2025',snittpris:'97 øre/kWh'},{mnd:'Jan 2026',snittpris:'105 øre/kWh'},{mnd:'Feb 2026',snittpris:'80 øre/kWh'}]},
+    ],
+    mobil: [
+      {navn:'Talkmore',badge:'billig',anbefalt:true,aktuell:'Ubegrenset fra 299 kr/mnd',trend:'↘ Prisene presses ned',kampanje:{tekst:'3 måneder halv pris',utloper:'15. april 2026'},historikk:[]},
+      {navn:'ice',badge:'billig',anbefalt:false,aktuell:'ICE MAX (ubegr. + Netflix) 399 kr/mnd',trend:'→ Stabil',kampanje:{tekst:'ICE MAX inkl. Netflix — ingen binding',utloper:'Løpende'},historikk:[]},
+      {navn:'Telenor',badge:'ok',anbefalt:false,aktuell:'Ubegrenset fra 499 kr/mnd',trend:'→ Premium-prising',kampanje:null,historikk:[]},
+      {navn:'OneCall',badge:'billig',anbefalt:false,aktuell:'10 GB fra 199 kr/mnd',trend:'↘ Lavpris',kampanje:{tekst:'Gratis SIM + ingen oppkoblingsgebyr',utloper:'30. april 2026'},historikk:[]},
+    ],
+    bredband: [
+      {navn:'Altibox',badge:'ok',anbefalt:false,aktuell:'250 Mbit/s fra 449 kr/mnd',trend:'→ Stabil',kampanje:null,historikk:[]},
+      {navn:'Telenor Fiber',badge:'ok',anbefalt:false,aktuell:'500 Mbit/s fra 499 kr/mnd',trend:'→ Stabil',kampanje:{tekst:'3 måneder gratis for nye kunder',utloper:'30. april 2026'},historikk:[]},
+      {navn:'Ice Fiber',badge:'billig',anbefalt:false,aktuell:'250 Mbit/s fra 349 kr/mnd',trend:'↘ Ny aktør presser priser',kampanje:{tekst:'Halv pris de 6 første månedene',utloper:'Løpende'},historikk:[]},
+    ]
+  };
+
+  function renderPrishistorikk() {
+    const BADGE = b => b==='billig'?'<span style="background:rgba(182,240,96,0.12);color:#b6f060;font-size:0.69rem;font-weight:700;padding:2px 9px;border-radius:100px">✓ Billig</span>':b==='dyr'?'<span style="background:rgba(248,113,113,0.12);color:#f87171;font-size:0.69rem;font-weight:700;padding:2px 9px;border-radius:100px">✗ Dyrt</span>':'<span style="background:rgba(251,191,36,0.12);color:#fbbf24;font-size:0.69rem;font-weight:700;padding:2px 9px;border-radius:100px">≈ Greit</span>';
+    function lagGrid(gridId, data) {
+      const el=document.getElementById(gridId);
+      if (!el) return;
+      el.innerHTML = data.map(d=>`
+        <div style="background:#0d1f15;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px;transition:border-color 0.2s">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div style="font-weight:700;font-size:0.93rem">${d.anbefalt?'⭐ ':''}${d.navn}</div>
+            ${BADGE(d.badge)}
+          </div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.8);margin-bottom:6px">${d.aktuell}</div>
+          <div style="font-size:0.76rem;color:rgba(255,255,255,0.4);margin-bottom:10px">${d.trend}</div>
+          ${d.kampanje?`<div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:10px 12px;margin-bottom:10px"><div style="font-size:0.78rem;line-height:1.55"><strong style="color:#a78bfa">🏷️ Kampanje:</strong> ${d.kampanje.tekst}</div><div style="font-size:0.71rem;color:rgba(255,255,255,0.35);margin-top:4px">Utløper: ${d.kampanje.utloper}</div></div>`:''}
+          ${d.historikk?.length?`<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;margin-top:4px">${d.historikk.map(h=>`<div style="display:flex;justify-content:space-between;font-size:0.77rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.45)"><span>${h.mnd}</span><span style="font-weight:600;color:rgba(255,255,255,0.7)">${h.snittpris}</span></div>`).join('')}</div>`:''}
+        </div>`).join('');
+    }
+    lagGrid('prisStromGrid', PRIS_DATA.strom);
+    lagGrid('prisMobilGrid', PRIS_DATA.mobil);
+    lagGrid('prisBredbandGrid', PRIS_DATA.bredband);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // MODUL 5: SPART OVERSIKT
+  // ═══════════════════════════════════════════════════════════════
+  function oppdaterSpartOversikt() {
+    let total=0; const posts=[];
+    if (kostnadStrom>0)         { total+=258; posts.push({lbl:'⚡ Strøm',beløp:258}); }
+    if (kostnadMobil>0)         { total+=100; posts.push({lbl:'📱 Mobil',beløp:100}); }
+    if (mineAbonnement.length>0){ total+=150; posts.push({lbl:'🎬 Abonnementer',beløp:150}); }
+    if (!total) return;
+    const el=document.getElementById('spartOversikt');
+    if (el) el.style.display='block';
+    const tEl=document.getElementById('spartTotalt');
+    if (tEl) tEl.textContent=(total*12).toLocaleString('no-NO')+' kr';
+    const bdEl=document.getElementById('spartBreakdown');
+    if (bdEl) bdEl.innerHTML=posts.map(p=>`<div style="background:rgba(182,240,96,0.06);border:1px solid rgba(182,240,96,0.12);border-radius:12px;padding:14px 12px;text-align:center"><div style="font-weight:700;font-size:1.1rem;color:#b6f060">${(p.beløp*12).toLocaleString('no-NO')} kr</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:4px">${p.lbl}/år</div></div>`).join('');
+  }
+
+</script>
+
+<!-- ══ ONBOARDING WIZARD ══ -->
+<div id="onboardingOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#152a1e;border:1px solid rgba(182,240,96,0.2);border-radius:20px;max-width:540px;width:100%;padding:36px;position:relative;max-height:90vh;overflow-y:auto;">
+
+    <!-- Progress -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:28px">
+      <div id="ob-prog-1" class="ob-steg aktiv">1</div>
+      <div class="ob-linje"></div>
+      <div id="ob-prog-2" class="ob-steg">2</div>
+      <div class="ob-linje"></div>
+      <div id="ob-prog-3" class="ob-steg">3</div>
+      <div class="ob-linje"></div>
+      <div id="ob-prog-4" class="ob-steg">4</div>
+      <div style="flex:1"></div>
+      <button onclick="lukkOnboarding()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;padding:4px">✕</button>
+    </div>
+
+    <!-- STEG 1: Velkommen -->
+    <div id="obSteg1">
+      <div style="font-size:2.5rem;margin-bottom:16px">👋</div>
+      <h2 style="font-family:'DM Serif Display',serif;font-size:1.8rem;margin-bottom:12px">Velkommen til Byttehjelpern!</h2>
+      <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:24px">
+        Vi hjelper deg å aldri betale for mye for strøm, mobil, bredbånd og forsikring.
+        Kom i gang på under 5 minutter — vi guider deg gjennom oppsettet.
+      </p>
+      <div style="background:rgba(182,240,96,0.06);border:1px solid rgba(182,240,96,0.15);border-radius:12px;padding:16px;margin-bottom:24px">
+        <div style="font-size:0.78rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lime);margin-bottom:10px">Du setter opp:</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.88rem">
+          <div>👤 <strong>Din profil</strong> — navn, adresse og kontaktinfo</div>
+          <div>⚡ <strong>Strømavtale</strong> — vi finner billigere alternativer</div>
+          <div>📱 <strong>Mobil og bredbånd</strong> — full sammenligning</div>
+          <div>💰 <strong>Økonomi</strong> — se hva du faktisk sitter igjen med</div>
+        </div>
+      </div>
+      <button class="btn-block" onclick="obNeste(2)">Kom i gang →</button>
+    </div>
+
+    <!-- STEG 2: Profil -->
+    <div id="obSteg2" style="display:none">
+      <div style="font-size:2rem;margin-bottom:12px">👤</div>
+      <h2 style="font-family:'DM Serif Display',serif;font-size:1.6rem;margin-bottom:8px">Din profil</h2>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px">Brukes for å identifisere deg ved avtalebytter.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Fornavn *</label>
+          <input id="ob-fornavn" type="text" placeholder="Ola" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Etternavn *</label>
+          <input id="ob-etternavn" type="text" placeholder="Nordmann" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Fødselsnummer (11 siffer) *</label>
+        <input id="ob-fnr" type="text" maxlength="11" placeholder="ddmmåå XXXXX" oninput="this.value=this.value.replace(/\D/g,'')" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Telefon *</label>
+          <input id="ob-tlf" type="tel" placeholder="400 00 000" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Gateadresse *</label>
+          <input id="ob-adresse" type="text" placeholder="Storgata 1" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Postnummer *</label>
+          <input id="ob-postnr" type="text" maxlength="4" placeholder="0001" oninput="slaSoekPoststed(this);document.getElementById('ob-poststed').value=document.getElementById('profPoststed').value" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Poststed</label>
+          <input id="ob-poststed" type="text" placeholder="Oslo" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="obNeste(1)" style="padding:11px 20px;border-radius:100px;background:transparent;border:1.5px solid rgba(255,255,255,0.1);color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem">← Tilbake</button>
+        <button class="btn-block" style="flex:1" onclick="obLagreProfil()">Lagre og gå videre →</button>
+      </div>
+    </div>
+
+    <!-- STEG 3: Strøm -->
+    <div id="obSteg3" style="display:none">
+      <div style="font-size:2rem;margin-bottom:12px">⚡</div>
+      <h2 style="font-family:'DM Serif Display',serif;font-size:1.6rem;margin-bottom:8px">Din strømavtale</h2>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px">Legg inn nåværende leverandør så finner vi billigere alternativer for deg.</p>
+      <div style="margin-bottom:12px">
+        <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Leverandør</label>
+        <select id="ob-stromlev" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+          <option value="">Velg leverandør...</option>
+          <option>Tibber</option><option>Fjordkraft</option><option>Fortum</option>
+          <option>Lyse</option><option>Hafslund</option><option>NTE</option>
+          <option>Agva Kraft</option><option>Cheap Energy</option><option>Ishavskraft</option>
+          <option>Annet</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Årsforbruk (kWh)</label>
+          <input id="ob-forbruk" type="number" placeholder="f.eks. 16000" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+        <div>
+          <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:5px">Nettleie (øre/kWh)</label>
+          <input id="ob-nettleie" type="number" placeholder="f.eks. 45" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none" onfocus="this.style.borderColor='var(--lime)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" />
+        </div>
+      </div>
+      <label style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:var(--muted);margin-bottom:20px;cursor:pointer;line-height:1.5">
+        <input type="checkbox" id="ob-samtykke" style="margin-top:3px;flex-shrink:0" />
+        Jeg gir Byttehjelpern tillatelse til å kontakte min strømleverandør på mine vegne. Jeg godkjenner alltid før et bytte gjennomføres.
+      </label>
+      <div style="display:flex;gap:10px">
+        <button onclick="obNeste(2)" style="padding:11px 20px;border-radius:100px;background:transparent;border:1.5px solid rgba(255,255,255,0.1);color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem">← Tilbake</button>
+        <button class="btn-block" style="flex:1" onclick="obLagreStrom()">Lagre og gå videre →</button>
+      </div>
+      <button onclick="obNeste(4)" style="display:block;width:100%;margin-top:10px;padding:10px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.82rem;text-align:center">Hopp over → (kan legges til senere)</button>
+    </div>
+
+    <!-- STEG 4: Ferdig -->
+    <div id="obSteg4" style="display:none">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:3rem;margin-bottom:16px">🎉</div>
+        <h2 style="font-family:'DM Serif Display',serif;font-size:1.8rem;margin-bottom:12px">Alt er satt opp!</h2>
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:28px">
+          Dashboardet ditt er klart. Vi begynner å overvåke markedet og varsler deg 
+          første gang vi finner en billigere avtale.
+        </p>
+        <div style="background:rgba(182,240,96,0.06);border:1px solid rgba(182,240,96,0.15);border-radius:12px;padding:16px;margin-bottom:28px;text-align:left">
+          <div style="font-size:0.78rem;font-weight:600;color:var(--lime);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase">Neste steg</div>
+          <div style="font-size:0.87rem;display:flex;flex-direction:column;gap:8px">
+            <div>📱 Legg til mobilabonnementet ditt</div>
+            <div>📡 Legg til bredbåndsavtalen din</div>
+            <div>🎬 Legg til strømmingabonnementer</div>
+            <div>💰 Registrer lønn og lån for full økonomianalyse</div>
+          </div>
+        </div>
+        <button class="btn-block" onclick="lukkOnboarding()">Gå til dashboardet →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
