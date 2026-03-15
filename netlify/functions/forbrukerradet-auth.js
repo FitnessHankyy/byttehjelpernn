@@ -54,3 +54,4 @@ async function fetchBanks(token) {
 exports.handler = async function(event) {
   const headers = {
     "Content-Type": "application/json",
+};
