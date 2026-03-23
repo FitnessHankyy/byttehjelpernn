@@ -1,6 +1,7 @@
 const FP_CONFIG = {
-  clientId: '',     // Tom = bruk fallback-data, ikke live API
+  clientId: 'live',
   clientSecret: ''
+};
 };		
   const { createClient } = supabase;
   const db = createClient(
