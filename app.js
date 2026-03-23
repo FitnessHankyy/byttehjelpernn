@@ -1514,14 +1514,17 @@ async function sjekkOgVisOnboarding(userId) {
         ? `?loanAmount=${laan}&repaymentPeriod=25&propertyValue=${Math.round(laan*1.2)}`
         : '';
       const data = await fpGet('mortgages');
-      const produkter = (data.products || data)
-        .map(p => ({
-          bank:      p.provider?.name || p.bankName || 'Ukjent',
-          rente:     p.effectiveInterestRate || p.nominalInterestRate || 0,
-          navn:      p.name || 'Boliglån',
-          krav:      p.requirements?.membershipRequired ? 'Krever medlemskap' : 'Åpen for alle',
-          nominell:  p.nominalInterestRate || 0,
-        }))
+     const produkter = (Array.isArray(data) ? data : (data.products || []))
+  .map(p => {
+    const rente = p.interestOnLoanData?.[0]?.nominalInterestRate || 0;
+    return {
+      bank:     p.companyName || 'Ukjent',
+      rente:    rente,
+      navn:     p.product?.name || p.name || 'Boliglån',
+      krav:     p.isMembershipRequired ? 'Krever medlemskap' : 'Åpen for alle',
+      nominell: rente,
+    };
+  })
         .filter(p => p.rente > 0)
         .sort((a, b) => a.rente - b.rente)
         .slice(0, 4);
