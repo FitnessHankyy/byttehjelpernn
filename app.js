@@ -1442,19 +1442,18 @@ async function sjekkOgVisOnboarding(userId) {
     try {
       const data = await fpGet('bank-deposits');
       // Filtrer på sparekonto/høyrentekonto, sorter på høyeste rente
-      const sparekontoer = (data.products || data)
-        .filter(p => p.depositAccounts?.some(a => a.interestRate > 0))
-        .map(p => {
-          const beste = p.depositAccounts.reduce((best, a) =>
-            (a.interestRate > (best?.interestRate || 0)) ? a : best, null);
-          return {
-            bank:  p.provider?.name || p.bankName || 'Ukjent bank',
-            rente: beste?.interestRate || 0,
-            maks:  beste?.maximumDepositAmount,
-            navn:  p.name || beste?.accountName || '',
-            binding: beste?.noticePeriod || 0,
-          };
-        })
+      const sparekontoer = (Array.isArray(data) ? data : (data.products || []))
+  .filter(p => p.product?.interestRate > 0 || p.interestRate > 0)
+  .map(p => {
+    const rente = p.product?.interestRate || p.interestRate || 0;
+    return {
+      bank:    p.companyName || p.provider?.name || 'Ukjent bank',
+      rente:   rente,
+      maks:    p.product?.maximumDepositAmount || null,
+      navn:    p.product?.name || p.name || '',
+      binding: p.product?.noticePeriod || 0,
+    };
+  })
         .filter(p => p.rente > 0)
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 6);
@@ -1526,6 +1525,8 @@ async function sjekkOgVisOnboarding(userId) {
           };
         })
         .filter(p => p.rente > 0)
+        .filter(p => !['rehabilitering','grønn','gronn','første','forste','student']
+          .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => a.rente - b.rente)
         .slice(0, 4);
 
