@@ -2,8 +2,8 @@ const FP_CONFIG = {
   clientId: 'live',
   clientSecret: ''
 };
-};		
-  const { createClient } = supabase;
+
+const { createClient } = supabase;
   const db = createClient(
     'https://infvmrapalancgwhuvhh.supabase.co',
     'sb_publishable_aCpIUWseYZBrXZZdkvsGkQ_3nuGk4ws'
