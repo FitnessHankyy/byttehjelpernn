@@ -1,5 +1,5 @@
 const FP_CONFIG = {
-  clientId: 'live',
+  clientId: 'live-aktiv-finansportalen',
   clientSecret: ''
 };
 
