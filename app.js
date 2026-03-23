@@ -1441,19 +1441,25 @@ async function sjekkOgVisOnboarding(userId) {
     grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live renter...</div>';
     try {
       const data = await fpGet('bank-deposits');
-      // Filtrer på sparekonto/høyrentekonto, sorter på høyeste rente
+      // Debug: vis første element i console for å se eksakt datastruktur
+      console.log('Innskudd data raw:', data[0]);
+      // Finansportalen bank-deposits bruker depositRates[0].nominalInterestRate
+      // (analogt med interestOnLoanData[0].nominalInterestRate for boliglån)
       const sparekontoer = (Array.isArray(data) ? data : (data.products || []))
-  .filter(p => p.product?.interestRate > 0 || p.interestRate > 0)
-  .map(p => {
-    const rente = p.product?.interestRate || p.interestRate || 0;
-    return {
-      bank:    p.companyName || p.provider?.name || 'Ukjent bank',
-      rente:   rente,
-      maks:    p.product?.maximumDepositAmount || null,
-      navn:    p.product?.name || p.name || '',
-      binding: p.product?.noticePeriod || 0,
-    };
-  })
+        .map(p => {
+          const rente = p.product?.depositRates?.[0]?.nominalInterestRate
+            || p.depositRates?.[0]?.nominalInterestRate
+            || p.product?.interestRate
+            || p.interestRate
+            || 0;
+          return {
+            bank:    p.companyName || p.provider?.name || 'Ukjent bank',
+            rente:   rente,
+            maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
+            navn:    p.product?.name || p.name || '',
+            binding: p.product?.noticePeriod || p.noticePeriod || 0,
+          };
+        })
         .filter(p => p.rente > 0)
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 6);
