@@ -1515,16 +1515,16 @@ async function sjekkOgVisOnboarding(userId) {
         : '';
       const data = await fpGet('mortgages');
      const produkter = (Array.isArray(data) ? data : (data.products || []))
-  .map(p => {
-    const rente = p.interestOnLoanData?.[0]?.nominalInterestRate || 0;
-    return {
-      bank:     p.companyName || 'Ukjent',
-      rente:    rente,
-      navn:     p.product?.name || p.name || 'Boliglån',
-      krav:     p.isMembershipRequired ? 'Krever medlemskap' : 'Åpen for alle',
-      nominell: rente,
-    };
-  })
+        .map(p => {
+          const rente = p.product?.interestOnLoanData?.[0]?.nominalInterestRate || 0;
+          return {
+            bank:     p.companyName || 'Ukjent',
+            rente:    rente,
+            navn:     p.product?.name || p.name || 'Boliglån',
+            krav:     p.isMembershipRequired ? 'Krever medlemskap' : 'Åpen for alle',
+            nominell: rente,
+          };
+        })
         .filter(p => p.rente > 0)
         .sort((a, b) => a.rente - b.rente)
         .slice(0, 4);
