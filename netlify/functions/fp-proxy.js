@@ -2,8 +2,8 @@
 // Kjører server-side, ingen CORS-problemer
 
 const FP_BASE = 'https://finans-api.forbrukerradet.no';
-const CLIENT_ID     = '7c69a8a87ea16f0ee8b8eadc0c9199c13deedf939166ee9937a43f16e2f86cd9b654e651938399e1c171a7d2d168305a40c5bd60309eb99a996ecdb55b86b7a8';
-const CLIENT_SECRET = 'f4b9cb56bfb46576ea54cb63c305263c9e057bb236f226e4115011113090b315c7d4391c917beeaed8b98ea29c4406ff607d596fb6940b30e38a8c6d1ec2bea0';
+const CLIENT_ID     = process.env.FORBRUKERRADET_CLIENT_ID;
+const CLIENT_SECRET = process.env.FORBRUKERRADET_CLIENT_SECRET;
 
 // Enkel in-memory token-cache (lever så lenge funksjonen er varm)
 let cachedToken = null;
