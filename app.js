@@ -1441,17 +1441,9 @@ async function sjekkOgVisOnboarding(userId) {
     grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live renter...</div>';
     try {
       const data = await fpGet('bank-deposits');
-      // Debug: vis første element i console for å se eksakt datastruktur
-      console.log('Innskudd data raw:', data[0]);
-      // Finansportalen bank-deposits bruker depositRates[0].nominalInterestRate
-      // (analogt med interestOnLoanData[0].nominalInterestRate for boliglån)
       const sparekontoer = (Array.isArray(data) ? data : (data.products || []))
         .map(p => {
-          const rente = p.product?.depositRates?.[0]?.nominalInterestRate
-            || p.depositRates?.[0]?.nominalInterestRate
-            || p.product?.interestRate
-            || p.interestRate
-            || 0;
+          const rente = p.product?.nominalInterestRate || 0;
           return {
             bank:    p.companyName || p.provider?.name || 'Ukjent bank',
             rente:   rente,
