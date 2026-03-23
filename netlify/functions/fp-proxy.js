@@ -45,7 +45,7 @@ exports.handler = async function(event) {
   // Hvilket endepunkt vil klienten ha?
   const endpoint = event.queryStringParameters?.endpoint || 'bank-deposits';
   const ALLOWED = {
-    'bank-deposits': '/feed/deposits/all',
+    'bank-deposits': '/feed/bank-deposits/all',
     'mortgages':     '/feed/mortgages/all',
     'banks':         '/feed/banks',
   };
