@@ -5,7 +5,7 @@
 [functions]
   node_bundler = "esbuild"
 
-[context.production.environment]
+[build.environment]
   NODE_VERSION = "18"
 
 [[headers]]
