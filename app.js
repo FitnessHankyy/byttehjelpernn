@@ -1441,6 +1441,7 @@ async function sjekkOgVisOnboarding(userId) {
     grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live renter...</div>';
     try {
       const data = await fpGet('bank-deposits');
+      console.log('Antall før filter:', (Array.isArray(data) ? data : (data.products || [])).length);
       const sparekontoer = (Array.isArray(data) ? data : (data.products || []))
         .map(p => {
           const rente = p.product?.nominalInterestRate || 0;
@@ -1457,6 +1458,7 @@ async function sjekkOgVisOnboarding(userId) {
           .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 3);
+      console.log('Første objekt i sparekontoer etter mapping:', sparekontoer[0]);
 
       renderRenteKort(grid, sparekontoer, true);
       if (label) label.textContent = 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
