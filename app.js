@@ -1427,6 +1427,7 @@ async function sjekkOgVisOnboarding(userId) {
 
   // ── HØYRENTEKONTO / BANK DEPOSITS ────────────────────────────────
   async function lastRenteFraFinansportalen() {
+    console.log('BYTTEHJELPERN: Oppdaterer renter nå...');
     const grid = document.getElementById('renteKortGrid');
     const label = document.getElementById('renteKildeLabel');
     if (!grid) return;
@@ -1437,7 +1438,8 @@ async function sjekkOgVisOnboarding(userId) {
       return;
     }
 
-    grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live renter...</div>';
+    grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live renter...</div>';
+    let liveSuccess = false;
     try {
       const data = await fpGet('bank-deposits');
       const råData = Array.isArray(data) ? data : (data.products || []);
@@ -1458,30 +1460,21 @@ async function sjekkOgVisOnboarding(userId) {
 
       if (sparekontoer.length === 0) {
         renderRenteKort(grid, RENTE_FALLBACK, false);
-        if (label) label.textContent = 'Kunne ikke hente live data — viser sist kjente';
-        return;
-      }
-
-      renderRenteKort(grid, sparekontoer, true);
-      // Oppdater status direkte etter vellykket render — bruk getElementById for sikkerhet
-      const liveLabel = document.getElementById('renteKildeLabel');
-      if (liveLabel) {
-        liveLabel.textContent = '';
-        const dot = document.createElement('span');
-        dot.style.cssText = 'display:inline-block;width:7px;height:7px;border-radius:50%;background:#b6f060;margin-right:6px;vertical-align:middle';
-        const txt = document.createTextNode('Live data fra Finansportalen \u00b7 ' + new Date().toLocaleDateString('no-NO'));
-        liveLabel.appendChild(dot);
-        liveLabel.appendChild(txt);
+      } else {
+        renderRenteKort(grid, sparekontoer, true);
+        liveSuccess = true;
       }
     } catch (err) {
       console.error('Finansportalen rente feil:', err);
-      // Vis kun fallback hvis vi ikke allerede har live data på skjermen
-      if (grid.querySelector('[style*="b6f060"]')) {
-        // renderRenteKort kjørte OK — bare logg feilen, ikke overskriv label
-        console.warn('Render OK men catch ble trigget:', err);
-      } else {
-        renderRenteKort(grid, RENTE_FALLBACK, false);
-        if (label) label.textContent = 'Kunne ikke hente live data — viser sist kjente';
+      renderRenteKort(grid, RENTE_FALLBACK, false);
+    } finally {
+      // Alltid sett riktig label til slutt — uansett hva catch måtte ha gjort
+      if (label) {
+        if (liveSuccess) {
+          label.innerHTML = '<span style="color:#b6f060;font-size:0.8rem;vertical-align:middle">●</span> Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
+        } else {
+          label.textContent = 'Kunne ikke hente live data — viser sist kjente';
+        }
       }
     }
   }
