@@ -1465,10 +1465,8 @@ async function sjekkOgVisOnboarding(userId) {
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 3);
 
-      console.log('Etter filter/sort, topp 3:', sparekontoer);
-
       renderRenteKort(grid, sparekontoer, true);
-      if (label) label.textContent = 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
+      if (label) label.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#b6f060;display:inline-block"></span> Live · Finansportalen · ' + new Date().toLocaleDateString('no-NO') + '</span>';
     } catch (err) {
       console.error('Finansportalen rente feil:', err);
       renderRenteKort(grid, RENTE_FALLBACK, false);
@@ -1496,17 +1494,17 @@ async function sjekkOgVisOnboarding(userId) {
           border:1px solid ${erBeste ? 'rgba(182,240,96,0.2)' : 'rgba(255,255,255,0.07)'};
           border-radius:14px;transition:border-color 0.2s;gap:16px">
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            ${erBeste ? '<span style="background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap">★ Beste</span>' : ''}
-            <span style="font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.bank}</span>
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+            ${erBeste ? '<span style="background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0">★ Beste</span>' : ''}
+            <span style="font-weight:700;font-size:0.9rem;line-height:1.3">${p.bank}</span>
           </div>
-          <div style="font-size:0.77rem;color:rgba(255,255,255,0.45);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.navn}${maksStr}</div>
+          <div style="font-size:0.77rem;color:rgba(255,255,255,0.45);margin-bottom:3px;line-height:1.4">${p.navn}${maksStr}</div>
           <div style="font-size:0.71rem;color:rgba(255,255,255,0.28)">${metaStr}</div>
         </div>
-        <div style="text-align:right;flex-shrink:0">
+        <div style="text-align:right;flex-shrink:0;padding-left:12px">
           <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;color:#b6f060;line-height:1">${renteStr}</div>
           <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:2px">nominell p.a.</div>
-          ${erLive ? '' : '<div style="font-size:0.64rem;color:rgba(251,191,36,0.55);margin-top:3px">⚡ Ikke live</div>'}
+          ${erLive ? '<div style="font-size:0.64rem;color:#b6f060;margin-top:3px">● Live</div>' : '<div style="font-size:0.64rem;color:rgba(251,191,36,0.55);margin-top:3px">⚡ Ikke live</div>'}
         </div>
       </div>`;
     }).join('');
