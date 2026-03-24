@@ -723,5 +723,22 @@
     .pris-historikk-liste { margin-top: 10px; }
     .pris-hist-rad { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--muted); }
     .pris-hist-rad:last-child { border-bottom: none; }
+.rente-filter-btn {
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rente-filter-btn.aktiv {
+  background: rgba(182,240,96,0.12);
+  border-color: rgba(182,240,96,0.3);
+  color: var(--lime);
+}
 
   
