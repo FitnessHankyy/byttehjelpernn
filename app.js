@@ -1466,7 +1466,7 @@ async function sjekkOgVisOnboarding(userId) {
 ),
           maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
           binding: p.product?.noticePeriod || p.noticePeriod || 0,
-        }))
+        })
        .filter(p => p.rente > 0)
         .filter(p => !['bsu','ungdom','barn','pensjon','depositum']
           .some(t => (p.navn || '').toLowerCase().includes(t)))
