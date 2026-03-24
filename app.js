@@ -1457,22 +1457,32 @@ async function sjekkOgVisOnboarding(userId) {
         .slice(0, 3);
 
       if (sparekontoer.length === 0) {
-        // Gyldige data, men ingenting passerte filter — vis fallback
         renderRenteKort(grid, RENTE_FALLBACK, false);
         if (label) label.textContent = 'Kunne ikke hente live data — viser sist kjente';
         return;
       }
 
       renderRenteKort(grid, sparekontoer, true);
-      if (label) label.innerHTML =
-        '<span style="display:inline-flex;align-items:center;gap:6px">'
-        + '<span style="width:7px;height:7px;border-radius:50%;background:#b6f060;flex-shrink:0"></span>'
-        + 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO')
-        + '</span>';
+      // Oppdater status direkte etter vellykket render — bruk getElementById for sikkerhet
+      const liveLabel = document.getElementById('renteKildeLabel');
+      if (liveLabel) {
+        liveLabel.textContent = '';
+        const dot = document.createElement('span');
+        dot.style.cssText = 'display:inline-block;width:7px;height:7px;border-radius:50%;background:#b6f060;margin-right:6px;vertical-align:middle';
+        const txt = document.createTextNode('Live data fra Finansportalen \u00b7 ' + new Date().toLocaleDateString('no-NO'));
+        liveLabel.appendChild(dot);
+        liveLabel.appendChild(txt);
+      }
     } catch (err) {
       console.error('Finansportalen rente feil:', err);
-      renderRenteKort(grid, RENTE_FALLBACK, false);
-      if (label) label.textContent = 'Kunne ikke hente live data — viser sist kjente';
+      // Vis kun fallback hvis vi ikke allerede har live data på skjermen
+      if (grid.querySelector('[style*="b6f060"]')) {
+        // renderRenteKort kjørte OK — bare logg feilen, ikke overskriv label
+        console.warn('Render OK men catch ble trigget:', err);
+      } else {
+        renderRenteKort(grid, RENTE_FALLBACK, false);
+        if (label) label.textContent = 'Kunne ikke hente live data — viser sist kjente';
+      }
     }
   }
 
