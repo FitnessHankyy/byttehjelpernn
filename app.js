@@ -1432,7 +1432,6 @@ async function sjekkOgVisOnboarding(userId) {
     if (!grid) return;
 
     if (!FP_CONFIG.clientId || FP_CONFIG.clientId.length < 10) {
-      // Vis hardkodede fallback-data med tydelig merknad
       renderRenteKort(grid, RENTE_FALLBACK, false);
       if (label) label.textContent = 'Oppdatert mars 2026 · Koble til Finansportalen for live-data';
       return;
@@ -1442,14 +1441,6 @@ async function sjekkOgVisOnboarding(userId) {
     try {
       const data = await fpGet('bank-deposits');
       const råData = Array.isArray(data) ? data : (data.products || []);
-      console.log('Antall før filter:', råData.length);
-      // Debug: vis råfelt på første objekt for å finne riktig rentePlassering
-      if (råData[0]) console.log('Råfelt p[0]:', {
-        companyName: råData[0].companyName,
-        nominalDirekte: råData[0].nominalInterestRate,
-        productNominal: råData[0].product?.nominalInterestRate,
-        productKeys: rawData?.[0]?.product ? Object.keys(råData[0].product) : 'ingen product',
-      });
 
       const sparekontoer = råData
         .map(p => ({
@@ -1465,8 +1456,19 @@ async function sjekkOgVisOnboarding(userId) {
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 3);
 
+      if (sparekontoer.length === 0) {
+        // Gyldige data, men ingenting passerte filter — vis fallback
+        renderRenteKort(grid, RENTE_FALLBACK, false);
+        if (label) label.textContent = 'Kunne ikke hente live data — viser sist kjente';
+        return;
+      }
+
       renderRenteKort(grid, sparekontoer, true);
-      if (label) label.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#b6f060;display:inline-block"></span> Live · Finansportalen · ' + new Date().toLocaleDateString('no-NO') + '</span>';
+      if (label) label.innerHTML =
+        '<span style="display:inline-flex;align-items:center;gap:6px">'
+        + '<span style="width:7px;height:7px;border-radius:50%;background:#b6f060;flex-shrink:0"></span>'
+        + 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO')
+        + '</span>';
     } catch (err) {
       console.error('Finansportalen rente feil:', err);
       renderRenteKort(grid, RENTE_FALLBACK, false);
@@ -1482,32 +1484,40 @@ async function sjekkOgVisOnboarding(userId) {
   ];
 
   function renderRenteKort(grid, data, erLive) {
-    grid.innerHTML = data.map((p, i) => {
-      const erBeste = i === 0;
-      const renteStr = p.rente.toFixed(2).replace('.', ',') + '%';
-      const bindStr  = p.binding > 0 ? p.binding + ' dagers varsel' : 'Ingen binding';
-      const gevyrStr = 'Ingen gebyrer';
-      const metaStr  = bindStr + ' • ' + gevyrStr;
-      const maksStr  = p.maks ? ' · Maks ' + (p.maks/1000000).toFixed(0) + ' mill kr' : '';
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;
-          background:${erBeste ? 'rgba(182,240,96,0.04)' : '#152a1e'};
-          border:1px solid ${erBeste ? 'rgba(182,240,96,0.2)' : 'rgba(255,255,255,0.07)'};
-          border-radius:14px;transition:border-color 0.2s;gap:16px">
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-            ${erBeste ? '<span style="background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0">★ Beste</span>' : ''}
-            <span style="font-weight:700;font-size:0.9rem;line-height:1.3">${p.bank}</span>
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:0.83rem;text-align:center;padding:20px">Ingen data tilgjengelig.</p>';
+      return;
+    }
+    grid.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px">' +
+      data.map((p, i) => {
+        const erBeste  = i === 0;
+        const renteStr = p.rente.toFixed(2).replace('.', ',') + '%';
+        const bindStr  = p.binding > 0 ? p.binding + ' dagers varsel' : 'Ingen binding';
+        const maksStr  = p.maks ? ' · Maks ' + (p.maks / 1_000_000).toFixed(0) + ' mill kr' : '';
+        const metaStr  = bindStr + ' • Flytende rente';
+        return `<div style="
+            display:flex;align-items:center;justify-content:space-between;gap:16px;
+            padding:16px 20px;
+            background:${erBeste ? 'rgba(182,240,96,0.04)' : '#152a1e'};
+            border:1px solid ${erBeste ? 'rgba(182,240,96,0.22)' : 'rgba(255,255,255,0.07)'};
+            border-radius:14px;">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">
+              ${erBeste ? '<span style="background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.64rem;font-weight:700;padding:2px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0">★ Beste rente</span>' : ''}
+              <span style="font-weight:700;font-size:0.92rem;color:#e8f5ee;line-height:1.3">${p.bank}</span>
+            </div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:4px">${p.navn}${maksStr}</div>
+            <div style="font-size:0.70rem;color:rgba(255,255,255,0.25)">${metaStr}</div>
           </div>
-          <div style="font-size:0.77rem;color:rgba(255,255,255,0.45);margin-bottom:3px;line-height:1.4">${p.navn}${maksStr}</div>
-          <div style="font-size:0.71rem;color:rgba(255,255,255,0.28)">${metaStr}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;padding-left:12px">
-          <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;color:#b6f060;line-height:1">${renteStr}</div>
-          <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:2px">nominell p.a.</div>
-          ${erLive ? '<div style="font-size:0.64rem;color:#b6f060;margin-top:3px">● Live</div>' : '<div style="font-size:0.64rem;color:rgba(251,191,36,0.55);margin-top:3px">⚡ Ikke live</div>'}
-        </div>
-      </div>`;
-    }).join('');
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:#b6f060;line-height:1">${renteStr}</div>
+            <div style="font-size:0.64rem;color:rgba(255,255,255,0.28);margin-top:3px">nominell p.a.</div>
+            ${erLive
+              ? ''
+              : '<div style="font-size:0.63rem;color:rgba(251,191,36,0.5);margin-top:4px">⚡ Ikke live</div>'}
+          </div>
+        </div>`;
+      }).join('') + '</div>';
   }
 
   // ── BOLIGLÅN / MORTGAGES ─────────────────────────────────────────
