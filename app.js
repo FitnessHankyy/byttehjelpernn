@@ -1444,11 +1444,37 @@ async function sjekkOgVisOnboarding(userId) {
       const data = await fpGet('bank-deposits');
       const råData = Array.isArray(data) ? data : (data.products || []);
 
+      // DIAGNOSE: Eksponer faktisk feltstruktur fra API
+      if (råData[0]) {
+        const p0 = råData[0];
+        console.log('DIAGNOSE toppnivå-nøkler:', Object.keys(p0));
+        console.log('DIAGNOSE p0.product-nøkler:', p0.product ? Object.keys(p0.product) : 'MANGLER product-objekt');
+        console.log('DIAGNOSE rente-kandidater:', {
+          'p.product?.nominalInterestRate':  p0.product?.nominalInterestRate,
+          'p.product?.interestRate':         p0.product?.interestRate,
+          'p.product?.depositRate':          p0.product?.depositRate,
+          'p.product?.annualPercentageRate': p0.product?.annualPercentageRate,
+          'p.product?.rate':                 p0.product?.rate,
+          'p.nominalInterestRate':           p0.nominalInterestRate,
+          'p.interestRate':                  p0.interestRate,
+        });
+      }
+
       const sparekontoer = råData
         .map(p => ({
           bank:    p.companyName || p.provider?.name || 'Ukjent bank',
           navn:    p.product?.name || p.name || '',
-          rente:   parseFloat(p.product?.nominalInterestRate || p.nominalInterestRate || 0),
+          // Multi-path: prøver alle kjente felt-stier for renten
+          rente:   parseFloat(
+            p.product?.nominalInterestRate
+            ?? p.product?.interestRate
+            ?? p.product?.depositRate
+            ?? p.product?.annualPercentageRate
+            ?? p.product?.rate
+            ?? p.nominalInterestRate
+            ?? p.interestRate
+            ?? 0
+          ),
           maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
           binding: p.product?.noticePeriod || p.noticePeriod || 0,
         }))
@@ -1457,6 +1483,8 @@ async function sjekkOgVisOnboarding(userId) {
           .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 3);
+
+      console.log(`DIAGNOSE etter filter: ${sparekontoer.length} kontoer, topp:`, sparekontoer[0]);
 
       if (sparekontoer.length === 0) {
         renderRenteKort(grid, RENTE_FALLBACK, false);
