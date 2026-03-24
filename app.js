@@ -1464,7 +1464,6 @@ async function sjekkOgVisOnboarding(userId) {
   ?? p.nominalInterestRate
   ?? 0
 ),
-          ),
           maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
           binding: p.product?.noticePeriod || p.noticePeriod || 0,
         }))
