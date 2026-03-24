@@ -1466,14 +1466,14 @@ async function sjekkOgVisOnboarding(userId) {
           maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
           binding: p.product?.noticePeriod || p.noticePeriod || 0,
         }))
-        .filter(p => p.rente > 0)
-      .sort((a, b) => b.rente - a.rente)
-      .slice(0, 6);
+       .filter(p => p.rente > 0)
+        .filter(p => !['bsu','ungdom','barn','pensjon','depositum']
+          .some(t => (p.navn || '').toLowerCase().includes(t)))
+        .filter(p => p.product?.intervalAccount === 'nei' || !p.product?.intervalAccount)
+        .sort((a, b) => b.rente - a.rente)
+        .slice(0, 6);
 
-      const visningsData = sparekontoer.length > 0
-        ? sparekontoer.filter(p => !['bsu','fastrente','ungdom','barn']
-            .some(t => (p.navn || '').toLowerCase().includes(t)))
-        : [];
+        const visningsData = sparekontoer;
 
       const finale = visningsData.length > 0 ? visningsData : sparekontoer.slice(0, 3);
 
