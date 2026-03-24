@@ -1488,36 +1488,29 @@ async function sjekkOgVisOnboarding(userId) {
       grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-size:0.83rem;text-align:center;padding:20px">Ingen data tilgjengelig.</p>';
       return;
     }
-    grid.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px">' +
-      data.map((p, i) => {
-        const erBeste  = i === 0;
-        const renteStr = p.rente.toFixed(2).replace('.', ',') + '%';
-        const bindStr  = p.binding > 0 ? p.binding + ' dagers varsel' : 'Ingen binding';
-        const maksStr  = p.maks ? ' · Maks ' + (p.maks / 1_000_000).toFixed(0) + ' mill kr' : '';
-        const metaStr  = bindStr + ' • Flytende rente';
-        return `<div style="
-            display:flex;align-items:center;justify-content:space-between;gap:16px;
-            padding:16px 20px;
-            background:${erBeste ? 'rgba(182,240,96,0.04)' : '#152a1e'};
-            border:1px solid ${erBeste ? 'rgba(182,240,96,0.22)' : 'rgba(255,255,255,0.07)'};
-            border-radius:14px;">
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">
-              ${erBeste ? '<span style="background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.64rem;font-weight:700;padding:2px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0">★ Beste rente</span>' : ''}
-              <span style="font-weight:700;font-size:0.92rem;color:#e8f5ee;line-height:1.3">${p.bank}</span>
-            </div>
-            <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:4px">${p.navn}${maksStr}</div>
-            <div style="font-size:0.70rem;color:rgba(255,255,255,0.25)">${metaStr}</div>
+    // Container (#renteKortGrid) er allerede flex-column — injiser kort direkte
+    grid.innerHTML = data.map((p, i) => {
+      const erBeste  = i === 0;
+      const renteStr = p.rente.toFixed(2).replace('.', ',') + '%';
+      const bindStr  = p.binding > 0 ? p.binding + ' dagers varsel' : 'Ingen binding';
+      const maksStr  = p.maks ? ' · Maks ' + (p.maks / 1_000_000).toFixed(0) + ' mill kr' : '';
+      const metaStr  = bindStr + ' \u2022 Flytende rente';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;background:${erBeste ? 'rgba(182,240,96,0.04)' : '#152a1e'};border:1px solid ${erBeste ? 'rgba(182,240,96,0.22)' : 'rgba(255,255,255,0.07)'};border-radius:14px;">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">
+            ${erBeste ? '<span style="background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.64rem;font-weight:700;padding:2px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0">\u2605 Beste rente</span>' : ''}
+            <span style="font-weight:700;font-size:0.92rem;color:#e8f5ee;line-height:1.3">${p.bank}</span>
           </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:#b6f060;line-height:1">${renteStr}</div>
-            <div style="font-size:0.64rem;color:rgba(255,255,255,0.28);margin-top:3px">nominell p.a.</div>
-            ${erLive
-              ? ''
-              : '<div style="font-size:0.63rem;color:rgba(251,191,36,0.5);margin-top:4px">⚡ Ikke live</div>'}
-          </div>
-        </div>`;
-      }).join('') + '</div>';
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:4px">${p.navn}${maksStr}</div>
+          <div style="font-size:0.70rem;color:rgba(255,255,255,0.25)">${metaStr}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:#b6f060;line-height:1">${renteStr}</div>
+          <div style="font-size:0.64rem;color:rgba(255,255,255,0.28);margin-top:3px">nominell p.a.</div>
+          ${erLive ? '' : '<div style="font-size:0.63rem;color:rgba(251,191,36,0.5);margin-top:4px">\u26a1 Ikke live</div>'}
+        </div>
+      </div>`;
+    }).join('');
   }
 
   // ── BOLIGLÅN / MORTGAGES ─────────────────────────────────────────
