@@ -1600,7 +1600,8 @@ function filtrerRente(type, btn) {
           };
         })
         .filter(p => p.rente > 0)
-        .filter(p => !['rehabilitering','grønn','gronn','første','forste','student']
+        .filter(p => !['rehabilitering','grønn','gronn','første','forste','student',
+  'seniorlån','senior','private banking','spesial','bsu','ung']
           .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => a.rente - b.rente)
         .slice(0, 4);
