@@ -1441,24 +1441,31 @@ async function sjekkOgVisOnboarding(userId) {
     grid.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.83rem;grid-column:1/-1"><div style="font-size:1.5rem;margin-bottom:8px">⏳</div>Henter live renter...</div>';
     try {
       const data = await fpGet('bank-deposits');
-      console.log('Antall før filter:', (Array.isArray(data) ? data : (data.products || [])).length);
-      const sparekontoer = (Array.isArray(data) ? data : (data.products || []))
-        .map(p => {
-          const rente = p.product?.nominalInterestRate || 0;
-          return {
-            bank:    p.companyName || p.provider?.name || 'Ukjent bank',
-            rente:   rente,
-            maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
-            navn:    p.product?.name || p.name || '',
-            binding: p.product?.noticePeriod || p.noticePeriod || 0,
-          };
-        })
+      const råData = Array.isArray(data) ? data : (data.products || []);
+      console.log('Antall før filter:', råData.length);
+      // Debug: vis råfelt på første objekt for å finne riktig rentePlassering
+      if (råData[0]) console.log('Råfelt p[0]:', {
+        companyName: råData[0].companyName,
+        nominalDirekte: råData[0].nominalInterestRate,
+        productNominal: råData[0].product?.nominalInterestRate,
+        productKeys: rawData?.[0]?.product ? Object.keys(råData[0].product) : 'ingen product',
+      });
+
+      const sparekontoer = råData
+        .map(p => ({
+          bank:    p.companyName || p.provider?.name || 'Ukjent bank',
+          navn:    p.product?.name || p.name || '',
+          rente:   parseFloat(p.product?.nominalInterestRate || p.nominalInterestRate || 0),
+          maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
+          binding: p.product?.noticePeriod || p.noticePeriod || 0,
+        }))
         .filter(p => p.rente > 0)
-        .filter(p => !['bsu','fastrente','ungdom','barn']
+        .filter(p => !['bsu', 'fastrente', 'ungdom', 'barn']
           .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 3);
-      console.log('Første objekt i sparekontoer etter mapping:', sparekontoer[0]);
+
+      console.log('Etter filter/sort, topp 3:', sparekontoer);
 
       renderRenteKort(grid, sparekontoer, true);
       if (label) label.textContent = 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
