@@ -1567,6 +1567,34 @@ function filtrerRente(type, btn) {
   }
 
   // ── BOLIGLÅN / MORTGAGES ─────────────────────────────────────────
+let laanCacheData = [];
+
+function filtrerLaan(type, btn) {
+  document.querySelectorAll('.laan-filter-btn').forEach(b => b.classList.remove('aktiv'));
+  btn.classList.add('aktiv');
+
+  const grid = document.getElementById('laanGrid');
+  let filtrert = laanCacheData;
+
+  if (type === 'standard') {
+    filtrert = laanCacheData.filter(p =>
+      !['grønt','gronn','grønn','ramme','rammekreditt']
+      .some(t => (p.navn||'').toLowerCase().includes(t))
+    );
+  } else if (type === 'gronn') {
+    filtrert = laanCacheData.filter(p =>
+      ['grønt','gronn','grønn']
+      .some(t => (p.navn||'').toLowerCase().includes(t))
+    );
+  } else if (type === 'ramme') {
+    filtrert = laanCacheData.filter(p =>
+      ['ramme','rammekreditt']
+      .some(t => (p.navn||'').toLowerCase().includes(t))
+    );
+  }
+
+  renderLaanKort(grid, filtrert.length > 0 ? filtrert : laanCacheData, true);
+}
   async function lastLaanFraFinansportalen() {
     const grid  = document.getElementById('laanGrid');
     const label = document.getElementById('laanKildeLabel');
