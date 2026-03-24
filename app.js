@@ -1633,7 +1633,7 @@ function filtrerLaan(type, btn) {
           .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => a.rente - b.rente)
         .slice(0, 4);
-
+      laanCacheData = produkter;
       renderLaanKort(grid, produkter, true);
       if (label) label.textContent = 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
     } catch (err) {
