@@ -1468,8 +1468,8 @@ async function sjekkOgVisOnboarding(userId) {
           binding: p.product?.noticePeriod || p.noticePeriod || 0,
         }))
        .filter(p => p.rente > 0)
-        .filter(p => !['bsu','ungdom','barn','pensjon','depositum']
-          .some(t => (p.navn || '').toLowerCase().includes(t)))
+        .filter(p => !['bsu','ungdom','barn','pensjon','depositum','unge','0-17','0–17','gård','boligspar','bra start']
+  .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 6);
 
