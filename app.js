@@ -1453,8 +1453,10 @@ async function sjekkOgVisOnboarding(userId) {
           };
         })
         .filter(p => p.rente > 0)
+        .filter(p => !['bsu','fastrente','ungdom','barn']
+          .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => b.rente - a.rente)
-        .slice(0, 6);
+        .slice(0, 3);
 
       renderRenteKort(grid, sparekontoer, true);
       if (label) label.textContent = 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
@@ -1476,15 +1478,27 @@ async function sjekkOgVisOnboarding(userId) {
     grid.innerHTML = data.map((p, i) => {
       const erBeste = i === 0;
       const renteStr = p.rente.toFixed(2).replace('.', ',') + '%';
-      const maksStr  = p.maks ? 'Opp til ' + (p.maks/1000000).toFixed(0) + ' mill' : 'Ingen grense';
       const bindStr  = p.binding > 0 ? p.binding + ' dagers varsel' : 'Ingen binding';
-      return `<div style="background:${erBeste?'rgba(182,240,96,0.05)':'rgba(255,255,255,0.02)'};border:1px solid ${erBeste?'rgba(182,240,96,0.25)':'rgba(255,255,255,0.08)'};border-radius:14px;padding:18px;text-align:center;transition:all 0.2s">
-        <div style="font-size:0.73rem;color:rgba(255,255,255,0.45);font-weight:600;margin-bottom:8px">${p.bank}</div>
-        <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:#b6f060;line-height:1">${renteStr}</div>
-        <div style="font-size:0.67rem;color:rgba(255,255,255,0.35);margin-top:3px">p.a. innskuddsrente</div>
-        ${erBeste ? '<div style="display:inline-block;margin-top:10px;background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:100px">⭐ Beste rente</div>' : '<div style="display:inline-block;margin-top:10px;background:rgba(96,165,250,0.15);color:#60a5fa;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:100px">Anbefalt</div>'}
-        <div style="font-size:0.71rem;color:rgba(255,255,255,0.35);margin-top:8px">${bindStr} · ${maksStr}</div>
-        ${erLive ? '' : '<div style="font-size:0.67rem;color:rgba(251,191,36,0.6);margin-top:5px">⚡ Ikke live</div>'}
+      const gevyrStr = 'Ingen gebyrer';
+      const metaStr  = bindStr + ' • ' + gevyrStr;
+      const maksStr  = p.maks ? ' · Maks ' + (p.maks/1000000).toFixed(0) + ' mill kr' : '';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;
+          background:${erBeste ? 'rgba(182,240,96,0.04)' : '#152a1e'};
+          border:1px solid ${erBeste ? 'rgba(182,240,96,0.2)' : 'rgba(255,255,255,0.07)'};
+          border-radius:14px;transition:border-color 0.2s;gap:16px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            ${erBeste ? '<span style="background:rgba(182,240,96,0.15);color:#b6f060;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap">★ Beste</span>' : ''}
+            <span style="font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.bank}</span>
+          </div>
+          <div style="font-size:0.77rem;color:rgba(255,255,255,0.45);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.navn}${maksStr}</div>
+          <div style="font-size:0.71rem;color:rgba(255,255,255,0.28)">${metaStr}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:'DM Serif Display',serif;font-size:1.85rem;color:#b6f060;line-height:1">${renteStr}</div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:2px">nominell p.a.</div>
+          ${erLive ? '' : '<div style="font-size:0.64rem;color:rgba(251,191,36,0.55);margin-top:3px">⚡ Ikke live</div>'}
+        </div>
       </div>`;
     }).join('');
   }
