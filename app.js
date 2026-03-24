@@ -1427,7 +1427,6 @@ async function sjekkOgVisOnboarding(userId) {
 
   // ── HØYRENTEKONTO / BANK DEPOSITS ────────────────────────────────
   async function lastRenteFraFinansportalen() {
-    console.log('BYTTEHJELPERN: Oppdaterer renter nå...');
     const grid = document.getElementById('renteKortGrid');
     const label = document.getElementById('renteKildeLabel');
     if (!grid) return;
@@ -1447,18 +1446,7 @@ async function sjekkOgVisOnboarding(userId) {
       // DIAGNOSE: Eksponer faktisk feltstruktur fra API
       if (råData[0]) {
         const p0 = råData[0];
-        console.log('DIAGNOSE toppnivå-nøkler:', Object.keys(p0));
-        console.log('DIAGNOSE p0.product-nøkler:', p0.product ? Object.keys(p0.product) : 'MANGLER product-objekt');
-        console.log('DIAGNOSE rente-kandidater:', {
-          'p.product?.nominalInterestRate':  p0.product?.nominalInterestRate,
-          'p.product?.interestRate':         p0.product?.interestRate,
-          'p.product?.depositRate':          p0.product?.depositRate,
-          'p.product?.annualPercentageRate': p0.product?.annualPercentageRate,
-          'p.product?.rate':                 p0.product?.rate,
-          'p.nominalInterestRate':           p0.nominalInterestRate,
-          'p.interestRate':                  p0.interestRate,
-        });
-      }
+        
 
       const sparekontoer = råData
         .map(p => ({
@@ -1479,18 +1467,22 @@ async function sjekkOgVisOnboarding(userId) {
           binding: p.product?.noticePeriod || p.noticePeriod || 0,
         }))
         .filter(p => p.rente > 0)
-        .filter(p => !['bsu', 'fastrente', 'ungdom', 'barn']
-          .some(t => (p.navn || '').toLowerCase().includes(t)))
-        .sort((a, b) => b.rente - a.rente)
-        .slice(0, 3);
+      .sort((a, b) => b.rente - a.rente)
+      .slice(0, 6);
 
-      console.log(`DIAGNOSE etter filter: ${sparekontoer.length} kontoer, topp:`, sparekontoer[0]);
+      const visningsData = sparekontoer.length > 0
+        ? sparekontoer.filter(p => !['bsu','fastrente','ungdom','barn']
+            .some(t => (p.navn || '').toLowerCase().includes(t)))
+        : [];
 
-      if (sparekontoer.length === 0) {
+      const finale = visningsData.length > 0 ? visningsData : sparekontoer.slice(0, 3);
+
+      if (finale.length === 0) {
         renderRenteKort(grid, RENTE_FALLBACK, false);
       } else {
-        renderRenteKort(grid, sparekontoer, true);
+        renderRenteKort(grid, finale, true);
         liveSuccess = true;
+      }
       }
     } catch (err) {
       console.error('Finansportalen rente feil:', err);
