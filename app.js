@@ -1426,6 +1426,35 @@ async function sjekkOgVisOnboarding(userId) {
   }
 
   // ── HØYRENTEKONTO / BANK DEPOSITS ────────────────────────────────
+let renteCacheData = [];
+let aktivRenteFilter = 'alle';
+
+function filtrerRente(type, btn) {
+  aktivRenteFilter = type;
+  document.querySelectorAll('.rente-filter-btn').forEach(b => b.classList.remove('aktiv'));
+  btn.classList.add('aktiv');
+
+  const grid = document.getElementById('renteKortGrid');
+  let filtrert = renteCacheData;
+
+  if (type === 'hoyrentekonto') {
+    filtrert = renteCacheData.filter(p => 
+      !['fastrente','fastrenteinnskudd','plasseringskonto','kapitalkonto','måneder','mnd','binding']
+      .some(t => (p.navn||'').toLowerCase().includes(t))
+    );
+  } else if (type === 'fastrente') {
+    filtrert = renteCacheData.filter(p =>
+      ['fastrente','fastrenteinnskudd','plasseringskonto','kapitalkonto','måneder','mnd']
+      .some(t => (p.navn||'').toLowerCase().includes(t))
+    );
+  } else if (type === 'bsu') {
+    filtrert = renteCacheData.filter(p =>
+      ['bsu'].some(t => (p.navn||'').toLowerCase().includes(t))
+    );
+  }
+
+  renderRenteKort(grid, filtrert.length > 0 ? filtrert : renteCacheData, true);
+}
   async function lastRenteFraFinansportalen() {
     const grid = document.getElementById('renteKortGrid');
     const label = document.getElementById('renteKildeLabel');
@@ -1480,6 +1509,7 @@ async function sjekkOgVisOnboarding(userId) {
       if (finale.length === 0) {
         renderRenteKort(grid, RENTE_FALLBACK, false);
       } else {
+        renteCacheData = finale;
         renderRenteKort(grid, finale, true);
         liveSuccess = true;
       }
