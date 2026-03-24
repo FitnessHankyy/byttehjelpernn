@@ -1449,19 +1449,21 @@ async function sjekkOgVisOnboarding(userId) {
         
 
       const sparekontoer = råData
-        .map(p => ({
+  .filter(p => p.product?.accountType !== 6)
+  .map(p => ({
           bank:    p.companyName || p.provider?.name || 'Ukjent bank',
           navn:    p.product?.name || p.name || '',
           // Multi-path: prøver alle kjente felt-stier for renten
-          rente:   parseFloat(
-            p.product?.nominalInterestRate
-            ?? p.product?.interestRate
-            ?? p.product?.depositRate
-            ?? p.product?.annualPercentageRate
-            ?? p.product?.rate
-            ?? p.nominalInterestRate
-            ?? p.interestRate
-            ?? 0
+          rente: parseFloat(
+  p.product?.intervalAccountData?.[0]?.nominalInterestRate
+  ?? p.product?.nominalInterestRate
+  ?? p.product?.interestRate
+  ?? p.product?.depositRate
+  ?? p.product?.annualPercentageRate
+  ?? p.product?.rate
+  ?? p.nominalInterestRate
+  ?? 0
+),
           ),
           maks:    p.product?.maximumDepositAmount || p.maximumDepositAmount || null,
           binding: p.product?.noticePeriod || p.noticePeriod || 0,
