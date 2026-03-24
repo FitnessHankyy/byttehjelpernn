@@ -1469,7 +1469,6 @@ async function sjekkOgVisOnboarding(userId) {
        .filter(p => p.rente > 0)
         .filter(p => !['bsu','ungdom','barn','pensjon','depositum']
           .some(t => (p.navn || '').toLowerCase().includes(t)))
-        .filter(p => p.product?.intervalAccount === 'nei' || !p.product?.intervalAccount)
         .sort((a, b) => b.rente - a.rente)
         .slice(0, 6);
 
