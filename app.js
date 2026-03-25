@@ -1578,7 +1578,7 @@ function filtrerLaan(type, btn) {
 
   if (type === 'standard') {
     filtrert = laanCacheData.filter(p =>
-      !['grønt','gronn','grønn','ramme','rammekreditt','energilån','energi']
+      !['gr\u00f8nt','gr\u00f8nn','gronn','grønt','grønn','ramme','rammekreditt','energilån','energi','gr\u00f8']
       .some(t => (p.navn||'').toLowerCase().includes(t))
     );
   } else if (type === 'gronn') {
