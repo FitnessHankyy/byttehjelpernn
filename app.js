@@ -1572,18 +1572,12 @@ let laanCacheData = [];
 function filtrerLaan(type, btn) {
   document.querySelectorAll('.laan-filter-btn').forEach(b => b.classList.remove('aktiv'));
   btn.classList.add('aktiv');
-
   const grid = document.getElementById('laanGrid');
   let filtrert = laanCacheData;
 
   if (type === 'standard') {
     filtrert = laanCacheData.filter(p =>
-      if (type === 'standard') {
-  filtrert = laanCacheData.filter(p =>
-    !['gr', 'ramme', 'energi']
-    .some(t => (p.navn||'').toLowerCase().includes(t))
-  );
-}
+      !['gr', 'ramme', 'energi']
       .some(t => (p.navn||'').toLowerCase().includes(t))
     );
   } else if (type === 'gronn') {
@@ -1597,6 +1591,9 @@ function filtrerLaan(type, btn) {
       .some(t => (p.navn||'').toLowerCase().includes(t))
     );
   }
+
+  renderLaanKort(grid, filtrert.length > 0 ? filtrert : laanCacheData, true);
+}
 
   renderLaanKort(grid, filtrert.length > 0 ? filtrert : laanCacheData, true);
 }
