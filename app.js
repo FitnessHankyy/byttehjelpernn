@@ -1594,9 +1594,6 @@ function filtrerLaan(type, btn) {
 
   renderLaanKort(grid, filtrert.length > 0 ? filtrert : laanCacheData, true);
 }
-
-  renderLaanKort(grid, filtrert.length > 0 ? filtrert : laanCacheData, true);
-}
   async function lastLaanFraFinansportalen() {
     const grid  = document.getElementById('laanGrid');
     const label = document.getElementById('laanKildeLabel');
