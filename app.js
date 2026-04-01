@@ -275,6 +275,7 @@ async function sjekkOgVisOnboarding(userId) {
     loadBredbandData(userId);
     loadAbonnementData(userId);
     renderKatalog();
+    setTimeout(renderTrekkWidget, 800); // render after data loads
   }
 
   // ── MULTI-MÅLER FUNKSJONAR ────────────────────────────────
@@ -388,6 +389,7 @@ async function sjekkOgVisOnboarding(userId) {
 
     const antall = maalere.length || 1;
     const lev = maalere[0]?.leverandor || 'Ukjent';
+    window._stromNavn = lev; // used by trekkdato calendar
     oppdaterStatusKort('Strom', null,
       lev + (antall > 1 ? ` + ${antall-1} til` : ''),
       'Overvåkes aktivt', data.samtykke ? 'green' : 'yellow');
@@ -498,6 +500,7 @@ async function sjekkOgVisOnboarding(userId) {
       person: document.getElementById('fPerson').checked,
     }, { onConflict: 'user_id' });
     if (forsikringErr) { alert('Lagring feilet: ' + forsikringErr.message); return; }
+    window._forsikringNavn = selskap; // used by trekkdato calendar
     document.getElementById('forsikringSaveMsg').style.display = 'block';
     // Oppdater kostnad i dashboard
     if (pris) {
@@ -865,6 +868,7 @@ async function sjekkOgVisOnboarding(userId) {
   async function loadForsikringData(userId) {
     const { data } = await db.from('forsikring_avtaler').select('*').eq('user_id', userId).single();
     if (!data) return;
+    window._forsikringNavn = data.selskap; // used by trekkdato calendar
     document.getElementById('forsikringSelskap').value = data.selskap      || '';
     document.getElementById('forsikringPris').value    = data.pris         || '';
     document.getElementById('forsikringDato').value    = data.sist_sjekket || '';
@@ -884,6 +888,7 @@ async function sjekkOgVisOnboarding(userId) {
   async function loadBredbandData(userId) {
     const { data } = await db.from('bredband_avtaler').select('*').eq('user_id', userId).single();
     if (!data) return;
+    window._bredbandNavn = data.leverandor; // used by trekkdato calendar
     document.getElementById('bredbandLev').value   = data.leverandor || '';
     document.getElementById('bredbandHast').value  = data.hastighet  || '';
     document.getElementById('bredbandPris').value  = data.pris       || '';
@@ -1146,6 +1151,7 @@ async function sjekkOgVisOnboarding(userId) {
     if (navn === 'prishistorikk') renderPrishistorikk();
     if (navn === 'sparerad') { oppdaterSparerad(); lastRenteFraFinansportalen(); }
     if (navn === 'okonomi') { oppdaterOkonomiSammendrag(); renderTrekkKalender(); lastLaanFraFinansportalen(); }
+    if (navn === 'oversikt') { renderTrekkWidget(); }
     document.querySelectorAll('.dash-seksjon').forEach(s => s.classList.remove('aktiv'));
     document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('aktiv'));
     const seksjonId = 'seksjon' + navn.charAt(0).toUpperCase() + navn.slice(1);
@@ -1311,9 +1317,10 @@ async function sjekkOgVisOnboarding(userId) {
 
     const iDag = new Date().getDate();
     const dagerIMnd = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
-    const medTrekk = mineAbonnement.filter(a => a.trekkdag);
+    const allItems = hentAlleBetaling();
+    const medTrekk = allItems.filter(a => a.trekkdag);
 
-    // Kalender
+    // Kalender grid
     let html = '';
     for (let d = 1; d <= dagerIMnd; d++) {
       const trekk = medTrekk.filter(a => a.trekkdag === d);
@@ -1324,7 +1331,7 @@ async function sjekkOgVisOnboarding(userId) {
     }
     kalEl.innerHTML = html;
 
-    // Liste sortert etter dato
+    // Sorted list below calendar
     if (medTrekk.length > 0) {
       const sortert = [...medTrekk].sort((a,b) => a.trekkdag - b.trekkdag);
       listeEl.innerHTML = sortert.map(a => `
@@ -1332,43 +1339,56 @@ async function sjekkOgVisOnboarding(userId) {
           <div class="mine-abb-info">
             <span class="mine-abb-logo">${a.logo}</span>
             <div>
-              <div class="mine-abb-navn">${a.navn} <span style="color:var(--muted);font-weight:400">— ${a.pakke}</span></div>
+              <div class="mine-abb-navn">${a.navn}</div>
               <div class="mine-abb-pakke">Trekkes dag ${a.trekkdag} hver måned</div>
             </div>
           </div>
-          <span class="mine-abb-pris">${a.pris === 0 ? 'Gratis' : a.pris + ' kr'}</span>
+          <span class="mine-abb-pris">${a.pris ? a.pris + ' kr' : '—'}</span>
         </div>`).join('');
     } else {
-      listeEl.innerHTML = '<p style="font-size:0.85rem;color:var(--muted)">Ingen trekkdatoer lagt til ennå. Klikk et abonnement ovenfor.</p>';
+      listeEl.innerHTML = '<p style="font-size:0.85rem;color:var(--muted)">Klikk en dag i kalenderen for å sette trekkdato på regninger og abonnementer.</p>';
     }
+
+    // Also refresh dashboard widget if visible
+    renderTrekkWidget();
   }
 
   function velgTrekkDag(dag) {
     const editor = document.getElementById('trekkKalenderEditor');
     if (!editor) return;
 
-    // Highlight valgt dag
+    // Highlight selected day
     document.querySelectorAll('.trekk-dag').forEach(el => el.classList.remove('valgt'));
     const dagEls = document.querySelectorAll('.trekk-dag');
     if (dagEls[dag - 1]) dagEls[dag - 1].classList.add('valgt');
 
     document.getElementById('valgtDagNr').textContent = dag;
     const velger = document.getElementById('trekkAbbVelger');
+    const allItems = hentAlleBetaling();
 
-    if (!mineAbonnement || mineAbonnement.length === 0) {
-      velger.innerHTML = '<p style="font-size:0.83rem;color:var(--muted)">Ingen abonnementer lagt til ennå. Gå til Abonnementer-fanen og legg til først.</p>';
+    if (allItems.length === 0) {
+      velger.innerHTML = '<p style="font-size:0.83rem;color:var(--muted)">Ingen registrerte avtaler. Legg inn strøm, forsikring eller abonnementer først.</p>';
     } else {
-      velger.innerHTML = mineAbonnement.map(a => {
-        const erValgt = a.trekkdag === dag;
-        return `<div onclick="settTrekkDag('${a.id}', ${dag})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;background:${erValgt ? 'rgba(182,240,96,0.08)' : 'rgba(255,255,255,0.03)'};border:1px solid ${erValgt ? 'rgba(182,240,96,0.3)' : 'rgba(255,255,255,0.07)'};margin-bottom:6px;transition:all 0.15s">
-          <span style="font-size:1.2rem">${a.logo}</span>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:0.85rem;font-weight:500">${a.navn}</div>
-            <div style="font-size:0.72rem;color:var(--muted)">${a.trekkdag ? 'Dag ' + a.trekkdag : 'Ingen trekkdato'}</div>
-          </div>
-          ${erValgt ? '<span style="color:var(--lime);font-size:0.75rem;font-weight:700;flex-shrink:0">✓ Valgt</span>' : '<span style="color:rgba(255,255,255,0.2);font-size:0.75rem;flex-shrink:0">+ Sett</span>'}
-        </div>`;
-      }).join('');
+      // Group items by category
+      const grupper = ['Faste utgifter', 'Lån', 'Abonnementer'];
+      let html = '';
+      grupper.forEach(gruppe => {
+        const gruppeItems = allItems.filter(a => a.gruppe === gruppe);
+        if (gruppeItems.length === 0) return;
+        html += `<div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:10px 0 6px">${gruppe}</div>`;
+        html += gruppeItems.map(a => {
+          const erValgt = a.trekkdag === dag;
+          return `<div onclick="settTrekkDag('${a.id}', ${dag})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;background:${erValgt ? 'rgba(182,240,96,0.08)' : 'rgba(255,255,255,0.03)'};border:1px solid ${erValgt ? 'rgba(182,240,96,0.3)' : 'rgba(255,255,255,0.07)'};margin-bottom:5px;transition:all 0.15s">
+            <span style="font-size:1.1rem">${a.logo}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:0.84rem;font-weight:500">${a.navn}</div>
+              <div style="font-size:0.72rem;color:var(--muted)">${a.trekkdag ? 'Dag ' + a.trekkdag : 'Ingen trekkdato'}${a.pris ? ' · ' + a.pris + ' kr/mnd' : ''}</div>
+            </div>
+            ${erValgt ? '<span style="color:var(--lime);font-size:0.75rem;font-weight:700;flex-shrink:0">✓</span>' : '<span style="color:rgba(255,255,255,0.2);font-size:0.8rem;flex-shrink:0">+</span>'}
+          </div>`;
+        }).join('');
+      });
+      velger.innerHTML = html;
     }
 
     editor.style.display = 'block';
@@ -1376,19 +1396,57 @@ async function sjekkOgVisOnboarding(userId) {
   }
 
   function settTrekkDag(id, dag) {
-    const abb = mineAbonnement.find(a => a.id === id);
-    if (!abb) return;
-    // Toggle: klikk igjen for å fjerne trekkdato
-    abb.trekkdag = abb.trekkdag === dag ? undefined : dag;
+    const allItems = hentAlleBetaling();
+    const item = allItems.find(a => a.id === id);
+    if (!item) return;
+    const nyDag = item.trekkdag === dag ? undefined : dag; // toggle
+
+    if (item.kilde === 'abb') {
+      // Subscription — trekkdag lives on the mineAbonnement object
+      const abb = mineAbonnement.find(a => a.id === id);
+      if (abb) abb.trekkdag = nyDag;
+      localStorage.setItem('mineAbonnement', JSON.stringify(mineAbonnement));
+    } else {
+      // Fixed bill or loan — stored in trekkExtra
+      setTrekkExtra(id, nyDag || null);
+    }
+
     renderTrekkKalender();
-    velgTrekkDag(dag); // oppdater editoren
-    localStorage.setItem('mineAbonnement', JSON.stringify(mineAbonnement));
+    velgTrekkDag(dag);
   }
 
   function lukkTrekkKalenderEditor() {
     const editor = document.getElementById('trekkKalenderEditor');
     if (editor) editor.style.display = 'none';
     document.querySelectorAll('.trekk-dag').forEach(el => el.classList.remove('valgt'));
+  }
+
+  function renderTrekkWidget() {
+    const widget = document.getElementById('trekkDatoWidget');
+    const liste  = document.getElementById('trekkDatoWidgetListe');
+    if (!widget || !liste) return;
+
+    const allItems = hentAlleBetaling();
+    const medTrekk = allItems.filter(a => a.trekkdag).sort((a,b) => a.trekkdag - b.trekkdag);
+
+    if (medTrekk.length === 0) { widget.style.display = 'none'; return; }
+
+    const iDag = new Date().getDate();
+    liste.innerHTML = medTrekk.map(a => {
+      const dagerTil = a.trekkdag >= iDag ? a.trekkdag - iDag : null;
+      const snartTag = dagerTil !== null && dagerTil <= 3
+        ? `<span style="background:rgba(251,191,36,0.15);color:#fbbf24;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:100px;margin-left:8px">${dagerTil === 0 ? 'I dag!' : dagerTil === 1 ? 'I morgen' : 'Om ' + dagerTil + ' dager'}</span>`
+        : '';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);margin-bottom:5px">
+        <span style="font-size:1.1rem">${a.logo}</span>
+        <div style="flex:1">
+          <div style="font-size:0.84rem;font-weight:500">${a.navn}${snartTag}</div>
+          <div style="font-size:0.72rem;color:var(--muted)">Dag ${a.trekkdag} hver måned${a.pris ? ' · ' + a.pris + ' kr' : ''}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    widget.style.display = 'block';
   }
 
   // ── BOLK 4: GRAFER ────────────────────────────────────────────────────
@@ -1612,6 +1670,50 @@ function filtrerRente(type, btn) {
         </div>
       </div>`;
     }).join('');
+  }
+
+  // ── TREKKDATO STORAGE HELPERS ────────────────────────────────────
+  // trekkExtra stores payment days for non-subscription items:
+  // { strom: 15, forsikring: 1, bredband: 28, 'laan_123': 10 }
+  function getTrekkExtra() {
+    try { return JSON.parse(localStorage.getItem('trekkExtra') || '{}'); } catch(e) { return {}; }
+  }
+  function setTrekkExtra(id, dag) {
+    const extra = getTrekkExtra();
+    if (dag === undefined || dag === null) delete extra[id];
+    else extra[id] = dag;
+    localStorage.setItem('trekkExtra', JSON.stringify(extra));
+  }
+
+  // Returns a unified list of ALL payable items across all categories
+  function hentAlleBetaling() {
+    const extra = getTrekkExtra();
+    const laanTyper = { bolig: 'Boliglån 🏡', bil: 'Billån 🚗', forbruk: 'Forbrukslån 💳', student: 'Studielån 🎓' };
+    const items = [];
+
+    // Fixed monthly bills (only shown if user has registered them)
+    if (window._stromNavn || kostnadStrom)
+      items.push({ id: 'strom',     navn: window._stromNavn || 'Strøm',         logo: '⚡', pris: kostnadStrom,      trekkdag: extra['strom'],     kilde: 'extra', gruppe: 'Faste utgifter' });
+    if (window._forsikringNavn || kostnadForsikring)
+      items.push({ id: 'forsikring',navn: window._forsikringNavn || 'Forsikring',logo: '🛡️', pris: kostnadForsikring,  trekkdag: extra['forsikring'],kilde: 'extra', gruppe: 'Faste utgifter' });
+    if (window._bredbandNavn || kostnadBredband)
+      items.push({ id: 'bredband',  navn: window._bredbandNavn || 'Bredbånd',   logo: '📡', pris: kostnadBredband,    trekkdag: extra['bredband'],  kilde: 'extra', gruppe: 'Faste utgifter' });
+
+    // Loans
+    (typeof laanerListe !== 'undefined' ? laanerListe : []).forEach(l => {
+      if (l.sum || l.mnd) items.push({
+        id: l.id, navn: laanTyper[l.type] || 'Lån', logo: '🏦',
+        pris: parseInt(l.mnd) || null, trekkdag: extra[l.id], kilde: 'extra', gruppe: 'Lån'
+      });
+    });
+
+    // Subscriptions (trekkdag lives on the object itself)
+    (mineAbonnement || []).forEach(a => items.push({
+      id: a.id, navn: a.navn, logo: a.logo, pris: a.pris,
+      trekkdag: a.trekkdag, kilde: 'abb', gruppe: 'Abonnementer'
+    }));
+
+    return items;
   }
 
   // ── BOLIGLÅN / MORTGAGES ─────────────────────────────────────────
