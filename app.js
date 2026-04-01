@@ -1577,7 +1577,7 @@ function filtrerLaan(type, btn) {
 
   if (type === 'standard') {
     filtrert = laanCacheData.filter(p =>
-      !['gr', 'ramme', 'energi']
+      !['gr', 'ramme', 'energi', 'energispar', 'start bo', 'startbo']
       .some(t => (p.navn||'').toLowerCase().includes(t))
     );
   } else if (type === 'gronn') {
@@ -1587,7 +1587,7 @@ function filtrerLaan(type, btn) {
     );
   } else if (type === 'ramme') {
     filtrert = laanCacheData.filter(p =>
-      ['ramme','rammekreditt']
+      ['ramme','rammekreditt','flex','kassakreditt','kredittramme']
       .some(t => (p.navn||'').toLowerCase().includes(t))
     );
   }
@@ -1631,7 +1631,7 @@ function filtrerLaan(type, btn) {
   'seniorlån','senior','private banking','spesial','bsu','ung']
           .some(t => (p.navn || '').toLowerCase().includes(t)))
         .sort((a, b) => a.rente - b.rente)
-        .slice(0, 4);
+        .slice(0, 20);
       laanCacheData = produkter;
       renderLaanKort(grid, produkter, true);
       if (label) label.textContent = 'Live data fra Finansportalen · ' + new Date().toLocaleDateString('no-NO');
