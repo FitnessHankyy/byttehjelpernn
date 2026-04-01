@@ -174,6 +174,23 @@ const { createClient } = supabase;
       if (data.husleie) document.getElementById('profHusleie').value = data.husleie;
     }
     if (data.laan) { try { laanerListe = JSON.parse(data.laan); renderLaan(); } catch(e){} }
+
+    // Load abonnementer from Supabase (fallback to localStorage below)
+    if (data.abonnementer) {
+      try {
+        mineAbonnement = Array.isArray(data.abonnementer) ? data.abonnementer : JSON.parse(data.abonnementer);
+        renderKatalog(); renderMineAbonnement();
+      } catch(e) {}
+    }
+
+    // Load trekkExtra from Supabase
+    if (data.trekk_extra) {
+      window._trekkExtraCache = (typeof data.trekk_extra === 'object') ? data.trekk_extra : JSON.parse(data.trekk_extra);
+    } else {
+      // Migrate from localStorage if exists
+      try { window._trekkExtraCache = JSON.parse(localStorage.getItem('trekkExtra') || '{}'); } catch(e) { window._trekkExtraCache = {}; }
+    }
+
     visProfilData(data);
     oppdaterOkonomiSammendrag();
   }
@@ -916,16 +933,16 @@ async function sjekkOgVisOnboarding(userId) {
     ]},
     // VIDEO
     { id:'netflix', navn:'Netflix', logo:'🎬', kat:'video', url:'https://netflix.com', pakker:[
-      { navn:'Standard m/reklame', pris:109 }, { navn:'Standard', pris:149 },
-      { navn:'Premium (4K)', pris:199 }
+      { navn:'Standard m/reklame', pris:99 }, { navn:'Standard', pris:129 },
+      { navn:'Premium (4K)', pris:189 }
     ]},
     { id:'disney', navn:'Disney+', logo:'✨', kat:'video', url:'https://disneyplus.com', pakker:[
       { navn:'Standard m/reklame', pris:69 }, { navn:'Standard', pris:109 },
       { navn:'Premium (4K)', pris:159 }
     ]},
     { id:'max', navn:'Max (HBO)', logo:'📡', kat:'video', url:'https://www.hbomax.com/no', pakker:[
-      { navn:'Basis', pris:129 }, { navn:'Standard', pris:149 },
-      { navn:'Ultimate', pris:199 }
+      { navn:'Basic m/reklame', pris:89 }, { navn:'Standard', pris:149 },
+      { navn:'Premium', pris:189 }
     ]},
     { id:'skyshowtime', navn:'SkyShowtime', logo:'🎭', kat:'video', url:'https://skyshowtime.com', pakker:[
       { navn:'Standard', pris:129 }
@@ -1128,14 +1145,23 @@ async function sjekkOgVisOnboarding(userId) {
   async function saveAbonnement() {
     const { data: { session } } = await db.auth.getSession();
     if (!session) return;
-    // Lagrer lokalt i nettleseren (synkroniseres til sky i neste versjon)
-    const key = 'abb_' + session.user.id;
-    localStorage.setItem(key, JSON.stringify(mineAbonnement));
+    const { error } = await db.from('profiler').upsert({
+      user_id: session.user.id,
+      abonnementer: mineAbonnement
+    }, { onConflict: 'user_id' });
+    if (error) {
+      // Fallback to localStorage if Supabase column not yet added
+      console.warn('Supabase abonnement save failed, using localStorage:', error.message);
+      localStorage.setItem('abb_' + session.user.id, JSON.stringify(mineAbonnement));
+    }
     document.getElementById('abonnementSaveMsg').style.display = 'block';
     setTimeout(() => document.getElementById('abonnementSaveMsg').style.display = 'none', 3000);
   }
 
   async function loadAbonnementData(userId) {
+    // Primary load is now in loadProfilData() via profiler.abonnementer
+    // This function handles localStorage fallback for existing users
+    if (mineAbonnement.length > 0) return; // already loaded from Supabase
     const key = 'abb_' + userId;
     const lagret = localStorage.getItem(key);
     if (!lagret) return;
@@ -1395,20 +1421,20 @@ async function sjekkOgVisOnboarding(userId) {
     editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function settTrekkDag(id, dag) {
+  async function settTrekkDag(id, dag) {
     const allItems = hentAlleBetaling();
     const item = allItems.find(a => a.id === id);
     if (!item) return;
     const nyDag = item.trekkdag === dag ? undefined : dag; // toggle
 
     if (item.kilde === 'abb') {
-      // Subscription — trekkdag lives on the mineAbonnement object
+      // Subscription — trekkdag lives on the mineAbonnement object, save to Supabase
       const abb = mineAbonnement.find(a => a.id === id);
       if (abb) abb.trekkdag = nyDag;
-      localStorage.setItem('mineAbonnement', JSON.stringify(mineAbonnement));
+      await saveAbonnement();
     } else {
-      // Fixed bill or loan — stored in trekkExtra
-      setTrekkExtra(id, nyDag || null);
+      // Fixed bill or loan — saved to profiler.trekk_extra via Supabase
+      await setTrekkExtra(id, nyDag || null);
     }
 
     renderTrekkKalender();
@@ -1675,14 +1701,29 @@ function filtrerRente(type, btn) {
   // ── TREKKDATO STORAGE HELPERS ────────────────────────────────────
   // trekkExtra stores payment days for non-subscription items:
   // { strom: 15, forsikring: 1, bredband: 28, 'laan_123': 10 }
+  // Primary storage: profiler.trekk_extra (Supabase JSONB)
+  // Fallback: localStorage for offline / before column exists
+  window._trekkExtraCache = window._trekkExtraCache || {};
+
   function getTrekkExtra() {
-    try { return JSON.parse(localStorage.getItem('trekkExtra') || '{}'); } catch(e) { return {}; }
+    return window._trekkExtraCache || {};
   }
-  function setTrekkExtra(id, dag) {
-    const extra = getTrekkExtra();
+
+  async function setTrekkExtra(id, dag) {
+    const extra = { ...getTrekkExtra() };
     if (dag === undefined || dag === null) delete extra[id];
     else extra[id] = dag;
-    localStorage.setItem('trekkExtra', JSON.stringify(extra));
+    window._trekkExtraCache = extra;
+    localStorage.setItem('trekkExtra', JSON.stringify(extra)); // local fallback
+
+    const { data: { session } } = await db.auth.getSession();
+    if (session) {
+      const { error } = await db.from('profiler').upsert({
+        user_id: session.user.id,
+        trekk_extra: extra
+      }, { onConflict: 'user_id' });
+      if (error) console.warn('Supabase trekk_extra save failed:', error.message);
+    }
   }
 
   // Returns a unified list of ALL payable items across all categories
