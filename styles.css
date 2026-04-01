@@ -315,7 +315,7 @@
     .sidebar-dot.red { background: #f87171; }
 
     /* ── HOVED-INNHOLD ── */
-    .dash-main { padding: 32px 40px; max-width: 860px; }
+    .dash-main { padding: 32px 40px; max-width: 860px; margin: 0 auto; width: 100%; }
     @media (max-width: 900px) { .dash-main { padding: 24px 20px; } }
 
     /* ── VELKOMST ── */

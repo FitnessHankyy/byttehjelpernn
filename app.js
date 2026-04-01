@@ -1576,8 +1576,12 @@ function filtrerLaan(type, btn) {
   let filtrert = laanCacheData;
 
   if (type === 'standard') {
+    // Standard = open to everyone, no membership or special requirements
     filtrert = laanCacheData.filter(p =>
-      !['gr', 'ramme', 'energi', 'energispar', 'start bo', 'startbo']
+      p.krav !== 'Krever medlemskap' &&
+      !['gr', 'ramme', 'energi', 'energispar', 'start bo', 'startbo',
+        'lofavør', 'favør', 'fagforbund', 'nito', 'akademiker',
+        'ansatte', 'forsvars', 'politi', 'spesial', 'ung ', 'ung34']
       .some(t => (p.navn||'').toLowerCase().includes(t))
     );
   } else if (type === 'gronn') {
@@ -1643,10 +1647,10 @@ function filtrerLaan(type, btn) {
   }
 
   const LAAN_FALLBACK = [
-    { bank:'Sbanken',           rente:5.09, nominell:4.98, navn:'Boliglån',        krav:'Åpen for alle' },
-    { bank:'Bulder Bank',       rente:5.19, nominell:5.08, navn:'Boliglån',        krav:'Åpen for alle' },
-    { bank:'Landkreditt Bank',  rente:5.24, nominell:5.12, navn:'Boliglån',        krav:'Krever medlemskap' },
-    { bank:'Sparebanken Vest',  rente:5.39, nominell:5.27, navn:'Boliglån ung 34', krav:'Under 34 år' },
+    { bank:'Sbanken',           rente:5.09, nominell:4.98, navn:'Boliglån', krav:'Åpen for alle' },
+    { bank:'Bulder Bank',       rente:5.19, nominell:5.08, navn:'Boliglån', krav:'Åpen for alle' },
+    { bank:'Sparebanken Sør',   rente:5.29, nominell:5.18, navn:'Boliglån', krav:'Åpen for alle' },
+    { bank:'Nordea',            rente:5.34, nominell:5.22, navn:'Boliglån', krav:'Åpen for alle' },
   ];
 
   function renderLaanKort(grid, data, erLive) {
