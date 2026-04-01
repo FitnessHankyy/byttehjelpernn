@@ -620,9 +620,12 @@
       aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column;
       align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 500;
       background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-      position: relative; cursor: default;
+      position: relative; cursor: pointer; transition: all 0.15s;
     }
+    .trekk-dag:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.18); }
+    .trekk-dag.valgt { border-color: var(--lime); box-shadow: 0 0 0 2px rgba(182,240,96,0.25); }
     .trekk-dag.har-trekk { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); }
+    .trekk-dag.har-trekk:hover { background: rgba(139,92,246,0.18); }
     .trekk-dag.i-dag { border-color: var(--lime); background: rgba(182,240,96,0.08); }
     .trekk-dag .dag-nr { font-weight: 600; }
     .trekk-dag .dag-abb { font-size: 0.62rem; color: var(--lime); }

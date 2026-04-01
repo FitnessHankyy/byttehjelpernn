@@ -1317,7 +1317,7 @@ async function sjekkOgVisOnboarding(userId) {
     let html = '';
     for (let d = 1; d <= dagerIMnd; d++) {
       const trekk = medTrekk.filter(a => a.trekkdag === d);
-      html += `<div class="trekk-dag ${trekk.length ? 'har-trekk' : ''} ${d === iDag ? 'i-dag' : ''}">
+      html += `<div class="trekk-dag ${trekk.length ? 'har-trekk' : ''} ${d === iDag ? 'i-dag' : ''}" onclick="velgTrekkDag(${d})">
         <span class="dag-nr">${d}</span>
         ${trekk.map(a => `<span class="dag-abb">${a.logo}</span>`).join('')}
       </div>`;
@@ -1341,6 +1341,54 @@ async function sjekkOgVisOnboarding(userId) {
     } else {
       listeEl.innerHTML = '<p style="font-size:0.85rem;color:var(--muted)">Ingen trekkdatoer lagt til ennå. Klikk et abonnement ovenfor.</p>';
     }
+  }
+
+  function velgTrekkDag(dag) {
+    const editor = document.getElementById('trekkKalenderEditor');
+    if (!editor) return;
+
+    // Highlight valgt dag
+    document.querySelectorAll('.trekk-dag').forEach(el => el.classList.remove('valgt'));
+    const dagEls = document.querySelectorAll('.trekk-dag');
+    if (dagEls[dag - 1]) dagEls[dag - 1].classList.add('valgt');
+
+    document.getElementById('valgtDagNr').textContent = dag;
+    const velger = document.getElementById('trekkAbbVelger');
+
+    if (!mineAbonnement || mineAbonnement.length === 0) {
+      velger.innerHTML = '<p style="font-size:0.83rem;color:var(--muted)">Ingen abonnementer lagt til ennå. Gå til Abonnementer-fanen og legg til først.</p>';
+    } else {
+      velger.innerHTML = mineAbonnement.map(a => {
+        const erValgt = a.trekkdag === dag;
+        return `<div onclick="settTrekkDag('${a.id}', ${dag})" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;background:${erValgt ? 'rgba(182,240,96,0.08)' : 'rgba(255,255,255,0.03)'};border:1px solid ${erValgt ? 'rgba(182,240,96,0.3)' : 'rgba(255,255,255,0.07)'};margin-bottom:6px;transition:all 0.15s">
+          <span style="font-size:1.2rem">${a.logo}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:0.85rem;font-weight:500">${a.navn}</div>
+            <div style="font-size:0.72rem;color:var(--muted)">${a.trekkdag ? 'Dag ' + a.trekkdag : 'Ingen trekkdato'}</div>
+          </div>
+          ${erValgt ? '<span style="color:var(--lime);font-size:0.75rem;font-weight:700;flex-shrink:0">✓ Valgt</span>' : '<span style="color:rgba(255,255,255,0.2);font-size:0.75rem;flex-shrink:0">+ Sett</span>'}
+        </div>`;
+      }).join('');
+    }
+
+    editor.style.display = 'block';
+    editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function settTrekkDag(id, dag) {
+    const abb = mineAbonnement.find(a => a.id === id);
+    if (!abb) return;
+    // Toggle: klikk igjen for å fjerne trekkdato
+    abb.trekkdag = abb.trekkdag === dag ? undefined : dag;
+    renderTrekkKalender();
+    velgTrekkDag(dag); // oppdater editoren
+    localStorage.setItem('mineAbonnement', JSON.stringify(mineAbonnement));
+  }
+
+  function lukkTrekkKalenderEditor() {
+    const editor = document.getElementById('trekkKalenderEditor');
+    if (editor) editor.style.display = 'none';
+    document.querySelectorAll('.trekk-dag').forEach(el => el.classList.remove('valgt'));
   }
 
   // ── BOLK 4: GRAFER ────────────────────────────────────────────────────

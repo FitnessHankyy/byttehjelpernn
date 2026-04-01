@@ -509,6 +509,16 @@
           <div class="profil-seksjon-tittel" style="margin-top:28px">📅 Trekkdatoer denne måneden</div>
           <p class="section-desc" style="margin-bottom:16px">Legg inn trekkdato på abonnementer så du vet når penger går ut.</p>
           <div id="trekkKalender" class="trekk-kalender"></div>
+
+          <!-- Inline editor — åpnes når bruker klikker en dag -->
+          <div id="trekkKalenderEditor" style="display:none;margin-top:14px;padding:16px 18px;background:rgba(255,255,255,0.03);border:1px solid rgba(182,240,96,0.2);border-radius:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div style="font-size:0.88rem;font-weight:600">📅 Dag <span id="valgtDagNr"></span> — velg abonnement</div>
+              <button onclick="lukkTrekkKalenderEditor()" style="background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:0 4px;line-height:1">✕</button>
+            </div>
+            <div id="trekkAbbVelger"></div>
+          </div>
+
           <div id="trekkListe" style="margin-top:16px"></div>
 
           <!-- BOLIGLÅN LIVE -->
